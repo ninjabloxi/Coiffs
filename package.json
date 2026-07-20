@@ -1,0 +1,19 @@
+{
+  "name": "coiffs",
+  "version": "1.0.0",
+  "description": "Coiffs - Gestion de familles et profils",
+  "type": "module",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev",
+    "build": "echo Build complete"
+  },
+  "dependencies": {
+    "mongodb": "^6.8.0",
+    "bcrypt": "^5.1.1",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "vercel": "^35.2.0"
+  }
+}
