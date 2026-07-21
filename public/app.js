@@ -167,6 +167,10 @@ const SETTINGS_STORAGE =
 "coiffs-settings";
 
 
+const ACCOUNT_STORAGE =
+"coiffs-account";
+
+
 
 
 //------------------//
