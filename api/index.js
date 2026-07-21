@@ -1,7 +1,3 @@
-//------------------//
-// MONGODB
-//------------------//
-
 import { MongoClient } from "mongodb";
 
 let client = null;
@@ -11,12 +7,8 @@ async function connectMongo() {
         return client;
     }
 
-    client = new MongoClient(
-        process.env.MONGODB_URI
-    );
-
+    client = new MongoClient(process.env.MONGODB_URI);
     await client.connect();
-
     return client;
 }
 
@@ -30,10 +22,6 @@ async function getCollections() {
         invitations: database.collection("invitations")
     };
 }
-
-//------------------//
-// UTILITAIRES
-//------------------//
 
 function generateID() {
     let id = "";
@@ -67,16 +55,9 @@ async function generateInvitationID(invitations) {
     return id;
 }
 
-//------------------//
-// COMPTES
-//------------------//
-
 async function createUser(data, { users }) {
-    if (!data.firstname || !data.password || !data.age) {
-        return {
-            success: false,
-            message: "Informations invalides."
-        };
+    if (!data || !data.firstname || !data.password || !data.age) {
+        return { success: false, message: "Informations invalides." };
     }
 
     const id = await generateUserID(users);
@@ -95,18 +76,12 @@ async function createUser(data, { users }) {
 
     await users.insertOne(user);
 
-    return {
-        success: true,
-        user
-    };
+    return { success: true, user };
 }
 
 async function loginUser(data, { users }) {
-    if (!data.id || !data.password) {
-        return {
-            success: false,
-            message: "Informations invalides."
-        };
+    if (!data || !data.id || !data.password) {
+        return { success: false, message: "Informations invalides." };
     }
 
     const user = await users.findOne({
@@ -115,23 +90,15 @@ async function loginUser(data, { users }) {
     });
 
     if (!user) {
-        return {
-            success: false,
-            message: "Compte introuvable."
-        };
+        return { success: false, message: "Compte introuvable." };
     }
 
-    return {
-        success: true,
-        user
-    };
+    return { success: true, user };
 }
 
 async function getUser(data, { users }) {
-    if (!data.id) {
-        return {
-            success: false
-        };
+    if (!data || !data.id) {
+        return { success: false };
     }
 
     const user = await users.findOne({
@@ -139,27 +106,15 @@ async function getUser(data, { users }) {
     });
 
     if (!user) {
-        return {
-            success: false
-        };
+        return { success: false };
     }
 
-    return {
-        success: true,
-        user
-    };
+    return { success: true, user };
 }
 
-//------------------//
-// FAMILLES
-//------------------//
-
 async function createFamily(data, { users, families }) {
-    if (!data.name || !data.password || !data.userID) {
-        return {
-            success: false,
-            message: "Informations invalides."
-        };
+    if (!data || !data.name || !data.password || !data.userID) {
+        return { success: false, message: "Informations invalides." };
     }
 
     const user = await users.findOne({
@@ -167,24 +122,15 @@ async function createFamily(data, { users, families }) {
     });
 
     if (!user) {
-        return {
-            success: false,
-            message: "Utilisateur introuvable."
-        };
+        return { success: false, message: "Utilisateur introuvable." };
     }
 
     if (user.age < 18) {
-        return {
-            success: false,
-            message: "Vous devez être majeur."
-        };
+        return { success: false, message: "Vous devez être majeur." };
     }
 
     if (user.familyID) {
-        return {
-            success: false,
-            message: "Vous appartenez déjà à une famille."
-        };
+        return { success: false, message: "Vous appartenez déjà à une famille." };
     }
 
     const id = await generateFamilyID(families);
@@ -218,21 +164,12 @@ async function createFamily(data, { users, families }) {
         }
     );
 
-    return {
-        success: true,
-        family
-    };
+    return { success: true, family };
 }
 
-//------------------//
-// RÉCUPÉRATIONS
-//------------------//
-
 async function getFamily(data, { families }) {
-    if (!data.id) {
-        return {
-            success: false
-        };
+    if (!data || !data.id) {
+        return { success: false };
     }
 
     const family = await families.findOne({
@@ -240,27 +177,15 @@ async function getFamily(data, { families }) {
     });
 
     if (!family) {
-        return {
-            success: false
-        };
+        return { success: false };
     }
 
-    return {
-        success: true,
-        family
-    };
+    return { success: true, family };
 }
 
-//------------------//
-// REJOINDRE
-//------------------//
-
 async function joinFamily(data, { users, families }) {
-    if (!data.familyID || !data.password || !data.userID) {
-        return {
-            success: false,
-            message: "Informations invalides."
-        };
+    if (!data || !data.familyID || !data.password || !data.userID) {
+        return { success: false, message: "Informations invalides." };
     }
 
     const family = await families.findOne({
@@ -268,17 +193,11 @@ async function joinFamily(data, { users, families }) {
     });
 
     if (!family) {
-        return {
-            success: false,
-            message: "Famille introuvable."
-        };
+        return { success: false, message: "Famille introuvable." };
     }
 
     if (family.password !== String(data.password)) {
-        return {
-            success: false,
-            message: "Mot de passe invalide."
-        };
+        return { success: false, message: "Mot de passe invalide." };
     }
 
     const user = await users.findOne({
@@ -286,17 +205,11 @@ async function joinFamily(data, { users, families }) {
     });
 
     if (!user) {
-        return {
-            success: false,
-            message: "Utilisateur introuvable."
-        };
+        return { success: false, message: "Utilisateur introuvable." };
     }
 
     if (user.familyID) {
-        return {
-            success: false,
-            message: "Vous appartenez déjà à une famille."
-        };
+        return { success: false, message: "Vous appartenez déjà à une famille." };
     }
 
     const member = {
@@ -323,32 +236,24 @@ async function joinFamily(data, { users, families }) {
         }
     );
 
-    return {
-        success: true,
-        family
-    };
+    return { success: true, family };
 }
 
-//------------------//
-// QUITTER
-//------------------//
-
 async function leaveFamily(data, { users, families }) {
+    if (!data || !data.userID) {
+        return { success: false };
+    }
+
     const user = await users.findOne({
         id: String(data.userID)
     });
 
     if (!user || !user.familyID) {
-        return {
-            success: false
-        };
+        return { success: false };
     }
 
     if (user.role === "admin") {
-        return {
-            success: false,
-            message: "L'administrateur ne peut pas quitter sa famille."
-        };
+        return { success: false, message: "L'administrateur ne peut pas quitter sa famille." };
     }
 
     await families.updateOne(
@@ -367,21 +272,12 @@ async function leaveFamily(data, { users, families }) {
         }
     );
 
-    return {
-        success: true
-    };
+    return { success: true };
 }
 
-//------------------//
-// INVITATIONS
-//------------------//
-
 async function createInvitation(data, { invitations }) {
-    if (!data.familyID || !data.adminID || !data.expiration || !data.limit) {
-        return {
-            success: false,
-            message: "Informations invalides."
-        };
+    if (!data || !data.familyID || !data.adminID || !data.expiration || !data.limit) {
+        return { success: false, message: "Informations invalides." };
     }
 
     const id = await generateInvitationID(invitations);
@@ -398,46 +294,40 @@ async function createInvitation(data, { invitations }) {
 
     await invitations.insertOne(invitation);
 
-    return {
-        success: true,
-        id
-    };
+    return { success: true, id };
 }
 
 async function getInvitation(data, { invitations }) {
+    if (!data || !data.invitationID) {
+        return { success: false };
+    }
+
     const invitation = await invitations.findOne({
         id: String(data.invitationID)
     });
 
     if (!invitation) {
-        return {
-            success: false
-        };
+        return { success: false };
     }
 
-    return {
-        success: true,
-        invitation
-    };
+    return { success: true, invitation };
 }
 
 async function joinInvitation(data, { users, families, invitations }) {
+    if (!data || !data.invitationID || !data.userID) {
+        return { success: false, message: "Informations invalides." };
+    }
+
     const invitation = await invitations.findOne({
         id: String(data.invitationID)
     });
 
     if (!invitation) {
-        return {
-            success: false,
-            message: "Invitation inexistante."
-        };
+        return { success: false, message: "Invitation inexistante." };
     }
 
     if (invitation.uses >= invitation.limit) {
-        return {
-            success: false,
-            message: "Invitation complète."
-        };
+        return { success: false, message: "Invitation complète." };
     }
 
     const family = await families.findOne({
@@ -449,16 +339,11 @@ async function joinInvitation(data, { users, families, invitations }) {
     });
 
     if (!family || !user) {
-        return {
-            success: false
-        };
+        return { success: false };
     }
 
     if (user.familyID) {
-        return {
-            success: false,
-            message: "Vous avez déjà une famille."
-        };
+        return { success: false, message: "Vous avez déjà une famille." };
     }
 
     const member = {
@@ -490,17 +375,10 @@ async function joinInvitation(data, { users, families, invitations }) {
         }
     );
 
-    return {
-        success: true,
-        family
-    };
+    return { success: true, family };
 }
 
-//------------------//
-// ROUTEUR FINAL
-//------------------//
-
-async function executeAction(action, data, collections, requestBody) {
+async function executeAction(action, data, collections, rawBody) {
     switch (action) {
         case "create-user":
             return await createUser(data, collections);
@@ -526,24 +404,20 @@ async function executeAction(action, data, collections, requestBody) {
             return {
                 success: false,
                 message: "Action inconnue.",
-                receivedAction: action,
-                receivedBody: requestBody
+                receivedAction: action || null,
+                receivedBody: rawBody || null
             };
     }
 }
 
 export default async function handler(request, response) {
     try {
-        if (request.method !== "POST") {
-            const collections = await getCollections();
-            const { action, data } = request.body || {};
-            const result = await executeAction(action, data, collections, request.body);
-            return response.status(200).json(result);
-        }
-
         const collections = await getCollections();
-        const { action, data } = request.body || {};
-        const result = await executeAction(action, data, collections, request.body);
+        const body = request.body || {};
+        const action = body.action;
+        const data = body.data;
+
+        const result = await executeAction(action, data, collections, body);
 
         return response.status(200).json(result);
     } catch (error) {
