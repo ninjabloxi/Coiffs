@@ -6,39 +6,45 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport"
+content="width=device-width,initial-scale=1.0">
 
 <title>
 Invitation Coiffs
 </title>
 
+<meta name="theme-color"
+content="#09090B">
 
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet"
+href="./style.css">
 
-<!-- Icône iPhone / iPad écran d'accueil -->
-<link rel="apple-touch-icon" href="logo.png">
+<link rel="apple-touch-icon"
+href="logo.png">
 
-<!-- Nom de l'application -->
-<meta name="apple-mobile-web-app-title" content="Coiffs">
+<meta name="apple-mobile-web-app-title"
+content="Coiffs">
 
-<!-- Mode application plein écran -->
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable"
+content="yes">
 
-<!-- Couleur de la barre d'état -->
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style"
+content="black-translucent">
 
-<!-- Icône Android / navigateurs -->
-<link rel="icon" type="image/png" href="logo.png">
+<link rel="icon"
+type="image/png"
+href="logo.png">
 
-<!-- Manifest (optionnel mais recommandé) -->
-<link rel="manifest" href="manifest.json">
+<link rel="manifest"
+href="manifest.json">
 
 </head>
 
-
 <body>
 
+
+
+<!-- BIENVENUE -->
 
 <div id="welcome-screen">
 
@@ -52,77 +58,109 @@ Bienvenue sur Coiffs
 
 
 
+<!-- INVITATION -->
+
 <div id="invitation-page">
 
-
 <div class="invitation-card">
-
 
 <img
 id="admin-photo"
 class="profile-picture"
-src=""
->
+src="logo.png">
 
 
-<p
-id="invite-text">
+<p id="invite-text">
 
-vous invite à rejoindre :
+Chargement de l'invitation...
 
 </p>
 
 
+<h1 id="family-name">
 
-<h1
-id="family-name">
-
-Famille
+Coiffs
 
 </h1>
 
+
+<br>
 
 
 <button
 id="join-button"
 class="primary-button">
 
-Rejoindre
+OUVRIR L'APPLICATION
 
 </button>
 
+</div>
 
 </div>
 
 
-</div>
 
-
+<!-- POP-UP -->
 
 <div id="popup-background">
-
 
 <div id="popup-container">
 
 </div>
 
-
 </div>
 
 
 
-<script src="animations.js"></script>
-
-<script src="mongodb.js"></script>
-
-<script src="app.js"></script>
+<script src="./animations.js"></script>
+<script src="./mongodb.js"></script>
+<script src="./app.js"></script>
 
 
 
 <script>
 
+//------------------//
+// INVITATION
+//------------------//
 
-window.onload = () => {
+const invitationID =
+
+new URLSearchParams(
+window.location.search
+).get("id");
+
+
+
+
+//------------------//
+// DÉMARRAGE
+//------------------//
+
+window.onload = ()=>{
+
+
+setTimeout(()=>{
+
+
+const welcome =
+
+document.getElementById(
+"welcome-screen"
+);
+
+
+if(welcome){
+
+welcome.style.display =
+"none";
+
+}
+
+
+},1500);
+
 
 
 loadInvitation();
@@ -132,8 +170,210 @@ loadInvitation();
 
 
 
-</script>
 
+//------------------//
+// CHARGEMENT
+//------------------//
+
+async function loadInvitation(){
+
+
+if(!invitationID){
+
+
+document.getElementById(
+"invite-text"
+).textContent =
+
+"Cette invitation est invalide.";
+
+
+return;
+
+
+}
+
+
+try{
+
+
+const result =
+
+await callAPI(
+
+"get-invitation",
+
+{
+
+invitationID
+
+}
+
+);
+
+
+
+if(!result.success){
+
+
+document.getElementById(
+"invite-text"
+).textContent =
+
+"Cette invitation n'existe plus.";
+
+
+return;
+
+
+}
+
+
+
+if(result.invitation){
+
+
+document.getElementById(
+"family-name"
+).textContent =
+
+result.invitation.familyName ||
+"Famille";
+
+
+}
+
+
+if(result.admin){
+
+
+document.getElementById(
+"invite-text"
+).textContent =
+
+result.admin.firstname +
+" vous invite à rejoindre :";
+
+
+
+if(result.admin.photo){
+
+
+document.getElementById(
+"admin-photo"
+).src =
+
+result.admin.photo;
+
+
+}
+
+
+}
+
+
+
+}
+
+
+catch(error){
+
+
+console.error(error);
+
+
+document.getElementById(
+"invite-text"
+).textContent =
+
+"Impossible de charger l'invitation.";
+
+
+}
+
+
+}
+
+
+
+
+//------------------//
+// OUVRIR
+//------------------//
+
+function openApplication(){
+
+
+if(!invitationID){
+return;
+}
+
+
+
+// sauvegarde locale
+localStorage.setItem(
+
+"coiffs-pending-invitation",
+
+invitationID
+
+);
+
+
+
+// déjà dans l'app web
+if(
+
+window.matchMedia(
+
+"(display-mode: standalone)"
+
+).matches ||
+
+window.navigator.standalone === true
+
+){
+
+
+window.location.href =
+
+"./app.html?invitation=" +
+
+invitationID;
+
+
+return;
+
+
+}
+
+
+
+// navigateur classique
+window.location.href =
+
+"./web.html?invitation=" +
+
+invitationID;
+
+
+}
+
+
+
+
+//------------------//
+// BOUTON
+//------------------//
+
+document.getElementById(
+"join-button"
+).onclick =
+
+openApplication;
+
+
+</script>
 
 </body>
 
