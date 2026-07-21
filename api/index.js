@@ -1487,34 +1487,18 @@ case "join-invitation":
 
 return await joinInvitation(data);
 
-
 default:
-
 
 return{
 
 success:false,
 
 message:
+
 "Action inconnue."
 
 };
 
-
 }
-
-
-}
-
-success:false,
-
-message:
-"Action inconnue."
-
-};
-
-
-}
-
 
 }
