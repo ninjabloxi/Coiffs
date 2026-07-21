@@ -209,37 +209,22 @@ return id;
 
 
 export default async function handler(
-
-
 request,
 response
-
-
 ){
 
+try{
 
-if(
 
-request.method !==
-"POST"
+if(request.method !== "POST"){
 
-){
-
-return response
-
-.status(405)
-
-.json({
-
+return response.status(405).json({
 
 success:false
 
-
 });
 
-
 }
-
 
 
 const {
@@ -247,67 +232,37 @@ const {
 action,
 data
 
-} =
-
-request.body;
+} = request.body;
 
 
+const result = await executeAction(
 
-switch(action){
+action,
+data
 
-
-case "ping":
-
-return response
-
-.status(200)
-
-.json({
+);
 
 
-success:true
+return response.status(200).json(
+
+result
+
+);
 
 
-});
+}
+
+catch(error){
 
 
-case "server-version":
-
-return response
-
-.status(200)
-
-.json({
+console.error(error);
 
 
-success:true,
-
-
-version:
-
-"1.0.0"
-
-
-});
-
-
-default:
-
-
-return response
-
-.status(400)
-
-.json({
-
+return response.status(500).json({
 
 success:false,
 
-
-message:
-
-"Action inconnue."
-
+message:error.message
 
 });
 
