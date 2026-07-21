@@ -533,9 +533,10 @@ async function executeAction(action, data, collections) {
 export default async function handler(request, response) {
     try {
         if (request.method !== "POST") {
-            return response.status(405).json({
-                success: false
-            });
+            const collections = await getCollections();
+            const { action, data } = request.body || {};
+            const result = await executeAction(action, data, collections);
+            return response.status(200).json(result);
         }
 
         const collections = await getCollections();
