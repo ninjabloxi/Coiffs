@@ -6904,8 +6904,8 @@ openFamily;
 window.createFamily =
 createFamily;
 
-window.joinFamily =
-joinFamily;
+window.joinWithToken =
+joinWithToken;
 
 window.leaveFamily =
 leaveFamily;
