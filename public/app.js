@@ -2346,9 +2346,7 @@ OUVRIR
 
 function showJoinFamily(){
 
-
 openPopup();
-
 
 popupContainer.innerHTML =
 
@@ -2361,40 +2359,42 @@ Rejoindre une famille
 </h2>
 
 
-<p
-class="small-title">
+<p class="small-title">
 
-ID de la famille
+Token d'invitation
 
 </p>
 
 
 <input
-id="family-id"
+id="family-token"
 type="text"
-maxlength="10">
-
-
-<p
-class="small-title">
-
-Mot de passe
-
-</p>
-
-
-<input
-id="family-password"
-type="password">
+maxlength="50"
+placeholder="COIFFS-XXXXXXXX">
 
 
 <br>
+
+<p
+style="
+font-size:14px;
+opacity:0.8;
+">
+
+Si vous venez d'une
+invitation Coiffs,
+copiez puis collez
+votre token ici.
+
+</p>
+
+
 <br>
 
 
 <button
 class="primary-button"
-onclick="joinFamily()">
+onclick="joinWithToken()">
 
 REJOINDRE
 
@@ -2415,9 +2415,7 @@ ANNULER
 
 `;
 
-
 }
-
 
 
 
@@ -2780,54 +2778,31 @@ showHome();
 // REJOINDRE
 //------------------//
 
+async function joinWithToken(){
 
-async function joinFamily(){
-
-
-if(
-
-!canJoinFamily()
-
-){
+if(!canJoinFamily()){
 
 return;
 
 }
 
 
-const familyID =
+const token =
 
 document.getElementById(
-"family-id"
+"family-token"
 ).value.trim();
 
 
-const password =
-
-document.getElementById(
-"family-password"
-).value;
-
-
-
-if(
-
-!familyID ||
-
-!password
-
-){
+if(!token){
 
 showError(
-
-"Veuillez compléter tous les champs."
-
+"Veuillez entrer votre token."
 );
 
 return;
 
 }
-
 
 
 showLoading();
@@ -2837,20 +2812,16 @@ const result =
 
 await callAPI(
 
-"join-family",
+"join-token",
 
 {
 
-familyID,
-
-password,
+token,
 
 userID:
 currentUser.id
 
-
 }
-
 
 );
 
@@ -2858,24 +2829,15 @@ currentUser.id
 hideLoading();
 
 
-
-if(
-
-!result.success
-
-){
+if(!result.success){
 
 showError(
-
 result.message
-
 );
 
 return;
 
-
 }
-
 
 
 currentUser.familyID =
@@ -2910,11 +2872,7 @@ showSuccess(
 
 showHome();
 
-
 }
-
-
-
 
 //------------------//
 // OUVRIR
