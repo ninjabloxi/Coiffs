@@ -279,56 +279,78 @@ message:error.message
 
 async function createUser(data){
 
-    const id =
 
-    await generateUserID();
+if(
 
+!data.firstname ||
 
-    const user = {
+!data.password ||
 
-        id,
+!data.age
 
-        firstname:
-        data.firstname,
+){
 
-        age:
-        data.age,
+return{
 
-        password:
-        data.password,
+success:false,
 
-        photo:
-        data.pictureURL ||
+message:
+"Informations invalides."
 
-        null,
+};
 
-        color:
-        data.color,
-
-        familyID:
-        null,
-
-        familyName:
-        null,
-
-        role:
-        null
-
-    };
+}
 
 
-    await users.insertOne(
-        user
-    );
+const id =
+
+await generateUserID();
 
 
-    return {
+const user = {
 
-        success:true,
+id,
 
-        user
+firstname:
+data.firstname.trim(),
 
-    };
+age:
+Number(data.age),
+
+password:
+data.password,
+
+photo:
+data.pictureURL ||
+null,
+
+color:
+data.color,
+
+familyID:
+null,
+
+familyName:
+null,
+
+role:
+null
+
+};
+
+
+await users.insertOne(
+user
+);
+
+
+return{
+
+success:true,
+
+user
+
+};
 
 
 }
