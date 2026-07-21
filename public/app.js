@@ -3,52 +3,15 @@
 //------------------//
 
 
-const welcomeScreen =
-document.getElementById(
-"welcome-screen"
-);
+const API_URL =
+
+"/api";
 
 
-const app =
-document.getElementById(
-"app"
-);
+const WELCOME_TIME =
 
+2000;
 
-const mainContainer =
-document.getElementById(
-"main-container"
-);
-
-
-const popupBackground =
-document.getElementById(
-"popup-background"
-);
-
-
-const popupContainer =
-document.getElementById(
-"popup-container"
-);
-
-
-const profileButton =
-document.getElementById(
-"profile-button"
-);
-
-
-const profileLetter =
-document.getElementById(
-"profile-letter"
-);
-
-
-const accountID =
-document.getElementById(
-"account-id"
-);
 
 
 
@@ -57,20 +20,83 @@ document.getElementById(
 //------------------//
 
 
-let currentUser = null;
+let currentUser =
 
-let currentFamily = null;
+null;
 
-let currentRole = null;
+
+let currentFamily =
+
+null;
+
+
+let currentRole =
+
+null;
+
 
 
 
 //------------------//
-// TEMPS
+// ÉLÉMENTS HTML
 //------------------//
 
 
-const WELCOME_TIME = 2000;
+const welcomeScreen =
+
+document.getElementById(
+"welcome-screen"
+);
+
+
+const app =
+
+document.getElementById(
+"app"
+);
+
+
+const mainContainer =
+
+document.getElementById(
+"main-container"
+);
+
+
+const popupBackground =
+
+document.getElementById(
+"popup-background"
+);
+
+
+const popupContainer =
+
+document.getElementById(
+"popup-container"
+);
+
+
+const profileButton =
+
+document.getElementById(
+"profile-button"
+);
+
+
+const profileLetter =
+
+document.getElementById(
+"profile-letter"
+);
+
+
+const accountID =
+
+document.getElementById(
+"account-id"
+);
+
 
 
 
@@ -79,9 +105,11 @@ const WELCOME_TIME = 2000;
 //------------------//
 
 
-window.onload = () =>{
+window.onload = ()=>{
+
 
 startWebsite();
+
 
 };
 
@@ -95,6 +123,7 @@ setTimeout(()=>{
 
 
 welcomeScreen.style.display =
+
 "none";
 
 
@@ -115,6 +144,61 @@ checkConnection();
 
 
 //------------------//
+// API
+//------------------//
+
+
+async function callAPI(
+action,
+data = {}
+){
+
+
+const request =
+
+await fetch(
+
+
+API_URL,
+
+
+{
+
+method:
+"POST",
+
+
+headers:{
+
+"Content-Type":
+"application/json"
+
+},
+
+
+body:
+
+JSON.stringify({
+
+action,
+data
+
+})
+
+
+}
+
+
+);
+
+
+return await request.json();
+
+
+}
+
+
+//------------------//
 // CONNEXION
 //------------------//
 
@@ -131,40 +215,49 @@ localStorage.getItem(
 
 if(!userID){
 
-
 showConnection();
 
-
 return;
-
 
 }
 
 
-try{
+const result =
 
+await callAPI(
 
-const user =
+"get-user",
 
-await getUser(
+{
+
+id:
 userID
+
+}
+
 );
 
 
-if(!user){
+if(
 
+!result.success
 
-localStorage.clear();
+){
+
+localStorage.removeItem(
+"coiffs-user-id"
+);
 
 showConnection();
 
 return;
 
-
 }
 
 
-currentUser = user;
+currentUser =
+
+result.user;
 
 
 updateHeader();
@@ -176,13 +269,181 @@ showHome();
 }
 
 
-catch(error){
 
 
-showConnection();
+async function login(){
+
+
+const id =
+
+document.getElementById(
+"login-id"
+).value.trim();
+
+
+const password =
+
+document.getElementById(
+"login-password"
+).value;
+
+
+const result =
+
+await callAPI(
+
+"login",
+
+{
+
+id,
+password
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser =
+
+result.user;
+
+
+localStorage.setItem(
+
+"coiffs-user-id",
+
+currentUser.id
+
+);
+
+
+updateHeader();
+
+
+showHome();
 
 
 }
+
+
+
+
+async function register(){
+
+
+const firstname =
+
+document.getElementById(
+"register-firstname"
+).value.trim();
+
+
+const age =
+
+Number(
+
+document.getElementById(
+"register-age"
+).value
+
+);
+
+
+const password =
+
+document.getElementById(
+"register-password"
+).value;
+
+
+const picture =
+
+document.getElementById(
+"register-picture"
+).files[0];
+
+
+let pictureURL =
+
+null;
+
+
+if(picture){
+
+pictureURL =
+
+await convertImage(
+picture
+);
+
+}
+
+
+const result =
+
+await callAPI(
+
+"create-user",
+
+{
+
+firstname,
+
+age,
+
+password,
+
+pictureURL,
+
+color:
+generateColor()
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser =
+
+result.user;
+
+
+localStorage.setItem(
+
+"coiffs-user-id",
+
+currentUser.id
+
+);
+
+
+updateHeader();
+
+
+showHome();
 
 
 }
@@ -191,7 +452,7 @@ showConnection();
 
 
 //------------------//
-// HEADER
+// PROFIL
 //------------------//
 
 
@@ -200,19 +461,7 @@ function updateHeader(){
 
 if(!currentUser){
 
-
-accountID.textContent =
-
-"Non connecté";
-
-
-profileLetter.textContent =
-
-"?";
-
-
 return;
-
 
 }
 
@@ -222,8 +471,11 @@ accountID.textContent =
 currentUser.id;
 
 
-if(currentUser.photo){
+if(
 
+currentUser.photo
+
+){
 
 profileButton.innerHTML =
 
@@ -249,8 +501,12 @@ profileButton.innerHTML =
 <span
 id="profile-letter">
 
-${currentUser.firstname[0]
-.toUpperCase()}
+${
+
+currentUser.firstname[0]
+.toUpperCase()
+
+}
 
 </span>
 
@@ -270,61 +526,491 @@ currentUser.color;
 
 
 
-//------------------//
+function logout(){
+
+
+localStorage.removeItem(
+
+"coiffs-user-id"
+
+);
+
+
+currentUser = null;
+
+currentFamily = null;
+
+currentRole = null;
+
+
+showConnection();
+
+
+}
+
+
+
+
+function showProfile(){
+
+
+popupBackground.style.display =
+
+"flex";
+
+
+popupContainer.innerHTML =
+
+`
+
+<h2>
+
+${currentUser.firstname}
+
+</h2>
+
+
+<p>
+
+ID :
+${currentUser.id}
+
+</p>
+
+
+<br>
+
+
+<button
+class="primary-button"
+onclick="logout()">
+
+Déconnexion
+
+</button>
+
+
+<br>
+<br>
+
+
+<button
+class="secondary-button"
+onclick="closePopup()">
+
+Fermer
+
+</button>
+
+`;
+
+
+}
+
+
+
+
+function closePopup(){
+
+
+popupBackground.style.display =
+
+"none";
+
+
+popupContainer.innerHTML =
+
+"";
+
+
+}//------------------//
 // CONNEXION
 //------------------//
 
 
-function showConnection(){
+async function checkConnection(){
 
 
-mainContainer.innerHTML =
+const userID =
+
+localStorage.getItem(
+"coiffs-user-id"
+);
+
+
+if(!userID){
+
+showConnection();
+
+return;
+
+}
+
+
+const result =
+
+await callAPI(
+
+"get-user",
+
+{
+
+id:
+userID
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+localStorage.removeItem(
+"coiffs-user-id"
+);
+
+showConnection();
+
+return;
+
+}
+
+
+currentUser =
+
+result.user;
+
+
+updateHeader();
+
+
+showHome();
+
+
+}
+
+
+
+
+async function login(){
+
+
+const id =
+
+document.getElementById(
+"login-id"
+).value.trim();
+
+
+const password =
+
+document.getElementById(
+"login-password"
+).value;
+
+
+const result =
+
+await callAPI(
+
+"login",
+
+{
+
+id,
+password
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser =
+
+result.user;
+
+
+localStorage.setItem(
+
+"coiffs-user-id",
+
+currentUser.id
+
+);
+
+
+updateHeader();
+
+
+showHome();
+
+
+}
+
+
+
+
+async function register(){
+
+
+const firstname =
+
+document.getElementById(
+"register-firstname"
+).value.trim();
+
+
+const age =
+
+Number(
+
+document.getElementById(
+"register-age"
+).value
+
+);
+
+
+const password =
+
+document.getElementById(
+"register-password"
+).value;
+
+
+const picture =
+
+document.getElementById(
+"register-picture"
+).files[0];
+
+
+let pictureURL =
+
+null;
+
+
+if(picture){
+
+pictureURL =
+
+await convertImage(
+picture
+);
+
+}
+
+
+const result =
+
+await callAPI(
+
+"create-user",
+
+{
+
+firstname,
+
+age,
+
+password,
+
+pictureURL,
+
+color:
+generateColor()
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser =
+
+result.user;
+
+
+localStorage.setItem(
+
+"coiffs-user-id",
+
+currentUser.id
+
+);
+
+
+updateHeader();
+
+
+showHome();
+
+
+}
+
+
+
+
+//------------------//
+// PROFIL
+//------------------//
+
+
+function updateHeader(){
+
+
+if(!currentUser){
+
+return;
+
+}
+
+
+accountID.textContent =
+
+currentUser.id;
+
+
+if(
+
+currentUser.photo
+
+){
+
+profileButton.innerHTML =
 
 `
 
-<div class="card">
+<img
+class="profile-picture"
+src="${currentUser.photo}">
+
+`;
 
 
-<h2
-class="section-title">
+}
 
-Connexion
+
+else{
+
+
+profileButton.innerHTML =
+
+`
+
+<span
+id="profile-letter">
+
+${
+
+currentUser.firstname[0]
+.toUpperCase()
+
+}
+
+</span>
+
+`;
+
+
+profileButton.style.background =
+
+currentUser.color;
+
+
+}
+
+
+}
+
+
+
+
+function logout(){
+
+
+localStorage.removeItem(
+
+"coiffs-user-id"
+
+);
+
+
+currentUser = null;
+
+currentFamily = null;
+
+currentRole = null;
+
+
+showConnection();
+
+
+}
+
+
+
+
+function showProfile(){
+
+
+popupBackground.style.display =
+
+"flex";
+
+
+popupContainer.innerHTML =
+
+`
+
+<h2>
+
+${currentUser.firstname}
 
 </h2>
 
 
-<p
-class="small-title">
+<p>
 
-ID du compte
-
-</p>
-
-
-<input
-id="login-id"
-type="text"
-maxlength="10">
-
-
-<p
-class="small-title">
-
-Mot de passe
+ID :
+${currentUser.id}
 
 </p>
 
 
-<input
-id="login-password"
-type="password">
+<br>
 
 
 <button
 class="primary-button"
-onclick="login()">
+onclick="logout()">
 
-Se connecter
+Déconnexion
 
 </button>
 
@@ -335,14 +1021,11 @@ Se connecter
 
 <button
 class="secondary-button"
-onclick="showRegister()">
+onclick="closePopup()">
 
-Créer un compte
+Fermer
 
 </button>
-
-
-</div>
 
 `;
 
@@ -352,152 +1035,60 @@ Créer un compte
 
 
 
-//------------------//
-// INSCRIPTION
-//------------------//
+function closePopup(){
 
 
-function showRegister(){
+popupBackground.style.display =
+
+"none";
 
 
-mainContainer.innerHTML =
+popupContainer.innerHTML =
 
-`
-
-<div class="card">
-
-
-<h2
-class="section-title">
-
-Créer un compte
-
-</h2>
-
-
-<p
-class="small-title">
-
-Prénom
-
-</p>
-
-
-<input
-id="register-firstname"
-type="text"
-maxlength="25">
-
-
-<p
-class="small-title">
-
-Âge
-
-</p>
-
-
-<input
-id="register-age"
-type="number">
-
-
-<p
-class="small-title">
-
-Mot de passe
-
-</p>
-
-
-<input
-id="register-password"
-type="password">
-
-
-<p
-class="small-title">
-
-Photo (optionnelle)
-
-</p>
-
-
-<input
-id="register-picture"
-type="file"
-accept="image/*">
-
-
-<button
-class="primary-button"
-onclick="register()">
-
-Créer mon compte
-
-</button>
-
-
-<br>
-<br>
-
-
-<button
-class="secondary-button"
-onclick="showConnection()">
-
-Retour
-
-</button>
-
-
-</div>
-
-`;
+"";
 
 
 }
-
-
-
 
 //------------------//
 // ACCUEIL
 //------------------//
 
 
-function showHome(){
+async function showHome(){
 
 
 if(!currentUser){
-
 
 showConnection();
 
 return;
 
-
 }
 
 
-if(currentUser.familyID){
+if(
 
+currentUser.familyID
+
+){
 
 showFamilyCard();
 
 return;
 
-
 }
 
 
-if(currentUser.age < 18){
+if(
 
+currentUser.age < 18
+
+){
 
 showMinorHome();
 
 return;
-
 
 }
 
@@ -508,11 +1099,6 @@ showAdultHome();
 }
 
 
-
-
-//------------------//
-// -18 ANS
-//------------------//
 
 
 function showMinorHome(){
@@ -541,7 +1127,8 @@ une famille.
 
 
 <button
-class="primary-button">
+class="primary-button"
+onclick="showJoinFamily()">
 
 REJOINDRE
 
@@ -556,11 +1143,6 @@ REJOINDRE
 }
 
 
-
-
-//------------------//
-// +18 ANS
-//------------------//
 
 
 function showAdultHome(){
@@ -581,7 +1163,8 @@ Rejoindre une famille
 
 
 <button
-class="primary-button">
+class="primary-button"
+onclick="showJoinFamily()">
 
 REJOINDRE
 
@@ -602,7 +1185,8 @@ Créer une famille
 
 
 <button
-class="primary-button">
+class="primary-button"
+onclick="showCreateFamily()">
 
 CRÉER
 
@@ -620,789 +1204,8 @@ CRÉER
 
 
 //------------------//
-// FAMILLE
+// FAMILLES
 //------------------//
-
-
-function showFamilyCard(){
-
-
-mainContainer.innerHTML =
-
-`
-
-<div class="family-card">
-
-
-<h2>
-
-${currentUser.familyName}
-
-</h2>
-
-
-<p>
-
-Votre famille
-
-</p>
-
-
-<button
-class="primary-button">
-
-OUVRIR
-
-</button>
-
-
-</div>
-
-`;
-
-
-}
-
-//------------------//
-// CONNEXION
-//------------------//
-
-
-async function login(){
-
-
-const id =
-
-document.getElementById(
-"login-id"
-).value.trim();
-
-
-const password =
-
-document.getElementById(
-"login-password"
-).value;
-
-
-
-if(!id || !password){
-
-return;
-
-}
-
-
-try{
-
-
-const result =
-
-await loginUser(
-id,
-password
-);
-
-
-if(!result.success){
-
-return;
-
-}
-
-
-currentUser =
-
-result.user;
-
-
-localStorage.setItem(
-"coiffs-user-id",
-currentUser.id
-);
-
-
-updateHeader();
-
-
-showHome();
-
-
-}
-
-
-catch(error){
-
-console.error(error);
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// INSCRIPTION
-//------------------//
-
-
-async function register(){
-
-
-const firstname =
-
-document.getElementById(
-"register-firstname"
-).value.trim();
-
-
-const age =
-
-Number(
-document.getElementById(
-"register-age"
-).value
-);
-
-
-const password =
-
-document.getElementById(
-"register-password"
-).value;
-
-
-const picture =
-
-document.getElementById(
-"register-picture"
-).files[0];
-
-
-
-if(
-
-!firstname ||
-
-!age ||
-
-!password
-
-){
-
-return;
-
-}
-
-
-
-try{
-
-
-let pictureURL = null;
-
-
-if(picture){
-
-
-pictureURL =
-
-await convertImage(
-picture
-);
-
-
-}
-
-
-const color =
-
-generateColor();
-
-
-const result =
-
-await createUser({
-
-
-firstname,
-
-age,
-
-password,
-
-pictureURL,
-
-color
-
-
-});
-
-
-
-if(!result.success){
-
-return;
-
-}
-
-
-currentUser =
-
-result.user;
-
-
-
-localStorage.setItem(
-
-"coiffs-user-id",
-
-currentUser.id
-
-);
-
-
-
-updateHeader();
-
-
-showHome();
-
-
-}
-
-
-catch(error){
-
-
-console.error(error);
-
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// DÉCONNEXION
-//------------------//
-
-
-function logout(){
-
-
-localStorage.removeItem(
-
-"coiffs-user-id"
-
-);
-
-
-currentUser = null;
-
-currentFamily = null;
-
-currentRole = null;
-
-
-updateHeader();
-
-
-showConnection();
-
-
-}
-
-
-
-
-//------------------//
-// PHOTO
-//------------------//
-
-
-function convertImage(file){
-
-
-return new Promise(
-
-
-(resolve)=>{
-
-
-const reader =
-
-new FileReader();
-
-
-reader.onload = () =>{
-
-
-resolve(
-
-reader.result
-
-);
-
-
-};
-
-
-reader.readAsDataURL(
-
-file
-
-);
-
-
-}
-
-
-);
-
-
-}
-
-
-
-
-//------------------//
-// COULEURS
-//------------------//
-
-
-function generateColor(){
-
-
-const colors = [
-
-
-"#FF6B6B",
-
-"#4D96FF",
-
-"#FFD93D",
-
-"#6BCB77",
-
-"#845EF7",
-
-"#FF922B",
-
-"#00C2A8",
-
-"#F06595",
-
-"#5C7CFA",
-
-"#20C997"
-
-
-];
-
-
-const random =
-
-Math.floor(
-
-
-Math.random()
-*
-colors.length
-
-
-);
-
-
-return colors[random];
-
-
-}
-
-
-
-
-//------------------//
-// PROFIL
-//------------------//
-
-
-profileButton.onclick = () =>{
-
-
-if(!currentUser){
-
-return;
-
-}
-
-
-showProfile();
-
-
-};
-
-
-
-
-function showProfile(){
-
-
-popupBackground.style.display =
-
-"flex";
-
-
-popupContainer.innerHTML =
-
-`
-
-<div class="profile-menu">
-
-
-<h2>
-
-${currentUser.firstname}
-
-</h2>
-
-
-<p>
-
-ID :
-
-${currentUser.id}
-
-</p>
-
-
-<button
-class="primary-button"
-onclick="logout()">
-
-Déconnexion
-
-</button>
-
-
-<button
-class="secondary-button"
-onclick="closePopup()">
-
-Fermer
-
-</button>
-
-
-</div>
-
-`;
-
-
-}
-
-
-
-
-//------------------//
-// POP-UP
-//------------------//
-
-
-function closePopup(){
-
-
-popupBackground.style.display =
-
-"none";
-
-
-popupContainer.innerHTML =
-
-"";
-
-
-}
-
-
-
-
-popupBackground.onclick = (event)=>{
-
-
-if(
-
-event.target ===
-popupBackground
-
-){
-
-closePopup();
-
-}
-
-
-};
-
-//------------------//
-// REJOINDRE
-//------------------//
-
-
-function showJoinFamily(){
-
-
-popupBackground.style.display =
-
-"flex";
-
-
-popupContainer.innerHTML =
-
-`
-
-<h2
-class="section-title">
-
-Rejoindre une famille
-
-</h2>
-
-
-<p
-class="small-title">
-
-ID de la famille
-
-</p>
-
-
-<input
-id="family-id"
-type="number"
-maxlength="10">
-
-
-<p
-class="small-title">
-
-Mot de passe
-
-</p>
-
-
-<input
-id="family-password"
-type="password">
-
-
-<button
-class="primary-button"
-onclick="joinFamily()">
-
-Rejoindre
-
-</button>
-
-
-<br>
-<br>
-
-
-<button
-class="secondary-button"
-onclick="closePopup()">
-
-Annuler
-
-</button>
-
-`;
-
-
-}
-
-
-
-
-async function joinFamily(){
-
-
-const familyID =
-
-document.getElementById(
-"family-id"
-).value.trim();
-
-
-const password =
-
-document.getElementById(
-"family-password"
-).value;
-
-
-
-if(
-
-!familyID ||
-
-!password
-
-){
-
-return;
-
-}
-
-
-
-try{
-
-
-const result =
-
-await joinUserFamily(
-
-
-currentUser.id,
-familyID,
-password
-
-
-);
-
-
-
-if(!result.success){
-
-return;
-
-}
-
-
-currentUser.familyID =
-
-result.family.id;
-
-
-currentUser.familyName =
-
-result.family.name;
-
-
-currentUser.role =
-
-"member";
-
-
-closePopup();
-
-
-showHome();
-
-
-}
-
-
-catch(error){
-
-
-console.error(error);
-
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// CRÉATION
-//------------------//
-
-
-function showCreateFamily(){
-
-
-popupBackground.style.display =
-
-"flex";
-
-
-popupContainer.innerHTML =
-
-`
-
-<h2
-class="section-title">
-
-Créer une famille
-
-</h2>
-
-
-<p
-class="small-title">
-
-Nom de la famille
-
-</p>
-
-
-<input
-id="family-name"
-type="text"
-maxlength="30">
-
-
-<p
-class="small-title">
-
-Mot de passe
-
-</p>
-
-
-<input
-id="family-create-password"
-type="password">
-
-
-<button
-class="primary-button"
-onclick="createFamily()">
-
-Créer
-
-</button>
-
-
-<br>
-<br>
-
-
-<button
-class="secondary-button"
-onclick="closePopup()">
-
-Annuler
-
-</button>
-
-`;
-
-
-}
-
-
 
 
 async function createFamily(){
@@ -1422,28 +1225,13 @@ document.getElementById(
 ).value;
 
 
-
-if(
-
-!name ||
-
-!password
-
-){
-
-return;
-
-}
-
-
-
-try{
-
-
 const result =
 
-await createUserFamily({
+await callAPI(
 
+"create-family",
+
+{
 
 name,
 
@@ -1452,12 +1240,16 @@ password,
 userID:
 currentUser.id
 
+}
 
-});
+);
 
 
+if(
 
-if(!result.success){
+!result.success
+
+){
 
 return;
 
@@ -1488,23 +1280,220 @@ showHome();
 }
 
 
-catch(error){
 
 
-console.error(error);
+async function joinFamily(){
+
+
+const familyID =
+
+document.getElementById(
+"family-id"
+).value.trim();
+
+
+const password =
+
+document.getElementById(
+"family-password"
+).value;
+
+
+const result =
+
+await callAPI(
+
+"join-family",
+
+{
+
+familyID,
+
+password,
+
+userID:
+currentUser.id
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser.familyID =
+
+result.family.id;
+
+
+currentUser.familyName =
+
+result.family.name;
+
+
+currentUser.role =
+
+"member";
+
+
+closePopup();
+
+
+showHome();
 
 
 }
 
 
+
+
+async function openFamily(){
+
+
+const result =
+
+await callAPI(
+
+"get-family",
+
+{
+
+id:
+currentUser.familyID
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentFamily =
+
+result.family;
+
+
+showFamily();
+
+
 }
 
 
 
 
+async function leaveFamily(){
+
+
+const result =
+
+await callAPI(
+
+"leave-family",
+
+{
+
+userID:
+currentUser.id
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser.familyID =
+
+null;
+
+currentUser.familyName =
+
+null;
+
+currentUser.role =
+
+null;
+
+
+showHome();
+
+
+}//------------------//
+// ACCUEIL
 //------------------//
-// BOUTONS
-//------------------//
+
+
+async function showHome(){
+
+
+if(!currentUser){
+
+showConnection();
+
+return;
+
+}
+
+
+if(
+
+currentUser.familyID
+
+){
+
+showFamilyCard();
+
+return;
+
+}
+
+
+if(
+
+currentUser.age < 18
+
+){
+
+showMinorHome();
+
+return;
+
+}
+
+
+showAdultHome();
+
+
+}
+
+
 
 
 function showMinorHome(){
@@ -1580,7 +1569,6 @@ REJOINDRE
 </div>
 
 
-
 <div class="family-card">
 
 
@@ -1607,42 +1595,195 @@ CRÉER
 
 }
 
+
+
+
 //------------------//
-// OUVRIR LA FAMILLE
+// FAMILLES
 //------------------//
+
+
+async function createFamily(){
+
+
+const name =
+
+document.getElementById(
+"family-name"
+).value.trim();
+
+
+const password =
+
+document.getElementById(
+"family-create-password"
+).value;
+
+
+const result =
+
+await callAPI(
+
+"create-family",
+
+{
+
+name,
+
+password,
+
+userID:
+currentUser.id
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser.familyID =
+
+result.family.id;
+
+
+currentUser.familyName =
+
+result.family.name;
+
+
+currentUser.role =
+
+"admin";
+
+
+closePopup();
+
+
+showHome();
+
+
+}
+
+
+
+
+async function joinFamily(){
+
+
+const familyID =
+
+document.getElementById(
+"family-id"
+).value.trim();
+
+
+const password =
+
+document.getElementById(
+"family-password"
+).value;
+
+
+const result =
+
+await callAPI(
+
+"join-family",
+
+{
+
+familyID,
+
+password,
+
+userID:
+currentUser.id
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser.familyID =
+
+result.family.id;
+
+
+currentUser.familyName =
+
+result.family.name;
+
+
+currentUser.role =
+
+"member";
+
+
+closePopup();
+
+
+showHome();
+
+
+}
+
+
 
 
 async function openFamily(){
 
 
-if(!currentUser.familyID){
+const result =
+
+await callAPI(
+
+"get-family",
+
+{
+
+id:
+currentUser.familyID
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
 
 return;
 
 }
-
-
-try{
 
 
 currentFamily =
 
-await getFamily(
-currentUser.familyID
-);
-
-
-if(!currentFamily){
-
-currentUser.familyID = null;
-
-currentUser.familyName = null;
-
-showHome();
-
-return;
-
-}
+result.family;
 
 
 showFamily();
@@ -1651,317 +1792,45 @@ showFamily();
 }
 
 
-catch(error){
-
-console.error(error);
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// AFFICHAGE
-//------------------//
-
-
-function showFamily(){
-
-
-let membersHTML = "";
-
-
-currentFamily.members.forEach((member)=>{
-
-
-membersHTML +=
-
-`
-
-<div class="member">
-
-
-<div>
-
-${
-member.photo ?
-
-`<img
-class="profile-picture"
-src="${member.photo}">`
-
-:
-
-`<div
-class="profile-default"
-style="background:${member.color};">
-
-${member.firstname[0]
-.toUpperCase()}
-
-</div>`
-
-}
-
-
-</div>
-
-
-<div class="member-information">
-
-
-<p
-class="member-name">
-
-${member.firstname}
-
-</p>
-
-
-<p
-class="member-role">
-
-${
-
-member.role ===
-"admin"
-
-?
-
-"Administrateur"
-
-:
-
-"Membre"
-
-}
-
-</p>
-
-
-</div>
-
-
-</div>
-
-`;
-
-
-});
-
-
-
-let adminButtons = "";
-
-
-if(
-
-currentUser.role ===
-"admin"
-
-){
-
-adminButtons =
-
-`
-
-<div class="admin-buttons">
-
-
-<button
-class="yellow-button"
-onclick="showInvitationSettings()">
-
-INVITER
-
-</button>
-
-
-<button
-class="secondary-button"
-onclick="showKickMembers()">
-
-EXPULSER
-
-</button>
-
-
-<button
-class="secondary-button"
-onclick="showTransferAdmin()">
-
-TRANSFÉRER
-L'ADMINISTRATION
-
-</button>
-
-
-<button
-class="delete-button"
-onclick="showDeleteFamily()">
-
-SUPPRIMER
-LA FAMILLE
-
-</button>
-
-
-</div>
-
-`;
-
-
-}
-
-
-
-
-mainContainer.innerHTML =
-
-`
-
-<div class="family-card">
-
-
-<h2>
-
-${currentFamily.name}
-
-</h2>
-
-
-<p>
-
-${currentFamily.members.length}
-membres
-
-</p>
-
-
-</div>
-
-
-
-<div class="list">
-
-
-${membersHTML}
-
-
-</div>
-
-
-<br>
-
-
-${adminButtons}
-
-
-`;
-
-
-}
-
-//------------------//
-// CARTE DE LA FAMILLE
-//------------------//
-
-
-function showFamilyCard(){
-
-
-mainContainer.innerHTML =
-
-`
-
-<div class="family-card">
-
-
-<h2>
-
-${currentUser.familyName}
-
-</h2>
-
-
-<p>
-
-Votre famille
-
-</p>
-
-
-<button
-class="primary-button"
-onclick="openFamily()">
-
-OUVRIR
-
-</button>
-
-
-</div>
-
-`;
-
-
-}
-
-//------------------//
-// QUITTER UNE FAMILLE
-//------------------//
 
 
 async function leaveFamily(){
 
 
-if(
+const result =
 
-!currentUser ||
+await callAPI(
 
-!currentUser.familyID
+"leave-family",
 
-){
+{
 
-return;
-
-}
-
-
-if(
-
-currentUser.role ===
-"admin"
-
-){
-
-return;
-
-}
-
-
-try{
-
-
-await leaveUserFamily(
-
+userID:
 currentUser.id
 
+}
+
 );
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
 
 
 currentUser.familyID =
 
 null;
 
-
 currentUser.familyName =
 
 null;
-
 
 currentUser.role =
 
@@ -1970,228 +1839,11 @@ null;
 
 showHome();
 
-
 }
-
-
-catch(error){
-
-
-console.error(error);
-
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// RAFRAÎCHIR
-//------------------//
-
-
-async function refreshUser(){
-
-
-if(!currentUser){
-
-return;
-
-}
-
-
-const user =
-
-await getUser(
-currentUser.id
-);
-
-
-if(!user){
-
-return;
-
-}
-
-
-currentUser = user;
-
-
-updateHeader();
-
-
-}
-
-//------------------//
-// SYNCHRONISATION
-//------------------//
-
-
-setInterval(()=>{
-
-
-if(
-
-currentUser
-
-){
-
-refreshUser();
-
-}
-
-
-},30000);
 
 //------------------//
 // INVITATIONS
 //------------------//
-
-
-function showInvitationSettings(){
-
-
-popupBackground.style.display =
-
-"flex";
-
-
-popupContainer.innerHTML =
-
-`
-
-<h2
-class="section-title">
-
-Créer une invitation
-
-</h2>
-
-
-<p
-class="small-title">
-
-Expiration
-
-</p>
-
-
-<select
-id="invitation-expiration">
-
-<option value="24h">
-
-24 heures
-
-</option>
-
-
-<option value="7d">
-
-7 jours
-
-</option>
-
-
-<option value="30d">
-
-30 jours
-
-</option>
-
-
-<option value="never">
-
-Jamais
-
-</option>
-
-
-</select>
-
-
-<br>
-<br>
-
-
-<p
-class="small-title">
-
-Nombre maximum
-d'utilisations
-
-</p>
-
-
-<select
-id="invitation-limit">
-
-
-<option value="1">
-
-1 personne
-
-</option>
-
-
-<option value="10">
-
-10 personnes
-
-</option>
-
-
-<option value="50">
-
-50 personnes
-
-</option>
-
-
-<option value="100">
-
-100 personnes
-
-</option>
-
-
-</select>
-
-
-<br>
-<br>
-
-
-<button
-class="primary-button"
-onclick="generateInvitation()">
-
-GÉNÉRER
-
-</button>
-
-
-<br>
-<br>
-
-
-<button
-class="secondary-button"
-onclick="closePopup()">
-
-ANNULER
-
-</button>
-
-`;
-
-
-}
-
-
 
 
 async function generateInvitation(){
@@ -2215,38 +1867,32 @@ document.getElementById(
 );
 
 
+const result =
 
-try{
+await callAPI(
 
+"create-invitation",
 
-const invitation =
-
-await createInvitation({
-
+{
 
 familyID:
-
 currentFamily.id,
 
-
 adminID:
-
 currentUser.id,
-
 
 expiration,
 
-
 limit
 
+}
 
-});
-
+);
 
 
 if(
 
-!invitation.success
+!result.success
 
 ){
 
@@ -2257,85 +1903,7 @@ return;
 
 const link =
 
-`https://coiffs.vercel.app/join/${
-
-invitation.id
-
-}`;
-
-
-
-popupContainer.innerHTML =
-
-`
-
-<h2
-class="section-title">
-
-Invitation créée
-
-</h2>
-
-
-<div
-class="invitation-link">
-
-${link}
-
-</div>
-
-
-<button
-class="primary-button"
-onclick="copyInvitationLink(
-
-'${link}'
-
-)">
-
-COPIER LE LIEN
-
-</button>
-
-
-<br>
-<br>
-
-
-<button
-class="secondary-button"
-onclick="closePopup()">
-
-FERMER
-
-</button>
-
-`;
-
-
-}
-
-
-catch(error){
-
-
-console.error(error);
-
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// COPIER
-//------------------//
-
-
-function copyInvitationLink(link){
+`${window.location.origin}/invitation.html?id=${result.id}`;
 
 
 navigator.clipboard.writeText(
@@ -2343,537 +1911,41 @@ link
 );
 
 
-}
+showMessage(
 
-//------------------//
-// EXPULSION
-//------------------//
+"Invitation créée",
 
-
-function showKickMembers(){
-
-
-let membersHTML = "";
-
-
-currentFamily.members.forEach((member)=>{
-
-
-if(
-
-member.id ===
-currentUser.id
-
-){
-
-return;
-
-}
-
-
-
-membersHTML +=
-
-`
-
-<div
-class="member">
-
-
-<div
-class="member-information">
-
-
-<p
-class="member-name">
-
-${member.firstname}
-
-</p>
-
-
-<p
-class="member-role">
-
-Membre
-
-</p>
-
-
-</div>
-
-
-<button
-class="delete-button"
-onclick="kickMember(
-
-'${member.id}'
-
-)">
-
-EXPULSER
-
-</button>
-
-
-</div>
-
-`;
-
-
-});
-
-
-
-popupBackground.style.display =
-
-"flex";
-
-
-popupContainer.innerHTML =
-
-`
-
-<h2
-class="section-title">
-
-Expulser un membre
-
-</h2>
-
-
-${membersHTML}
-
-
-<br>
-
-
-<button
-class="secondary-button"
-onclick="closePopup()">
-
-FERMER
-
-</button>
-
-`;
-
-
-}
-
-
-
-
-async function kickMember(memberID){
-
-
-try{
-
-
-await removeFamilyMember(
-
-
-currentFamily.id,
-
-memberID
-
+"Le lien a été copié."
 
 );
 
 
-closePopup();
-
-
-await openFamily();
-
-
-}
-
-
-catch(error){
-
-
-console.error(error);
-
-
-}
-
-
-}
-
-//------------------//
-// SUPPRESSION
-//------------------//
-
-
-function showDeleteFamily(){
-
-
-popupBackground.style.display =
-
-"flex";
-
-
-popupContainer.innerHTML =
-
-`
-
-<h2
-class="section-title">
-
-Supprimer
-la famille
-
-</h2>
-
-
-<p>
-
-Cette action est
-définitive.
-
-</p>
-
-
-<br>
-
-
-<button
-class="delete-button"
-onclick="deleteFamily()">
-
-SUPPRIMER
-
-</button>
-
-
-<br>
-<br>
-
-
-<button
-class="secondary-button"
-onclick="closePopup()">
-
-ANNULER
-
-</button>
-
-`;
-
-
 }
 
 
 
 
-async function deleteFamily(){
-
-
-try{
-
-
-await removeFamily(
-
-
-currentFamily.id
-
-);
-
-
-currentFamily = null;
-
-
-currentUser.familyID =
-
-null;
-
-
-currentUser.familyName =
-
-null;
-
-
-currentUser.role =
-
-null;
-
-
-closePopup();
-
-
-showHome();
-
-
-}
-
-
-catch(error){
-
-
-console.error(error);
-
-
-}
-
-
-}
-
-//------------------//
-// ADMINISTRATION
-//------------------//
-
-
-function showTransferAdmin(){
-
-
-let membersHTML = "";
-
-
-currentFamily.members.forEach((member)=>{
-
-
-if(
-
-member.id ===
-currentUser.id
-
-){
-
-return;
-
-}
-
-
-membersHTML +=
-
-`
-
-<div class="member">
-
-
-<div
-class="member-information">
-
-
-<p
-class="member-name">
-
-${member.firstname}
-
-</p>
-
-
-<p
-class="member-role">
-
-Membre
-
-</p>
-
-
-</div>
-
-
-<button
-class="yellow-button"
-onclick="transferAdmin(
-
-'${member.id}'
-
-)">
-
-TRANSFÉRER
-
-</button>
-
-
-</div>
-
-`;
-
-
-});
-
-
-popupBackground.style.display =
-
-"flex";
-
-
-popupContainer.innerHTML =
-
-`
-
-<h2
-class="section-title">
-
-Transférer
-l'administration
-
-</h2>
-
-
-${membersHTML}
-
-
-<br>
-
-
-<button
-class="secondary-button"
-onclick="closePopup()">
-
-FERMER
-
-</button>
-
-`;
-
-
-}
-
-
-
-
-async function transferAdmin(
-memberID
-){
-
-
-try{
-
-
-await transferFamilyAdmin(
-
-
-currentFamily.id,
-
-currentUser.id,
-
-memberID
-
-
-);
-
-
-currentUser.role =
-
-"member";
-
-
-closePopup();
-
-
-await openFamily();
-
-
-}
-
-
-catch(error){
-
-
-console.error(error);
-
-
-}
-
-
-}
-
-//------------------//
-// LIENS D'INVITATION
-//------------------//
-
-
-function joinInvitation(
-
-
-familyID,
+async function joinInvitation(
 invitationID
-
-
 ){
-
-
-if(!currentUser){
-
-
-localStorage.setItem(
-
-
-"coiffs-invitation",
-
-JSON.stringify({
-
-
-familyID,
-
-invitationID
-
-
-})
-
-
-);
-
-
-showConnection();
-
-
-return;
-
-
-}
-
-
-acceptInvitation(
-
-
-familyID,
-invitationID
-
-
-);
-
-
-}
-
-
-
-
-async function acceptInvitation(
-
-
-familyID,
-invitationID
-
-
-){
-
-
-try{
 
 
 const result =
 
-await joinInvitationFamily({
+await callAPI(
 
+"join-invitation",
+
+{
+
+invitationID,
 
 userID:
+currentUser.id
 
-currentUser.id,
+}
 
-
-familyID,
-
-
-invitationID
-
-
-});
-
+);
 
 
 if(
@@ -2908,172 +1980,44 @@ showHome();
 }
 
 
-catch(error){
 
-
-console.error(error);
-
-
-}
-
-
-}
-
-//------------------//
-// INVITATION EN ATTENTE
-//------------------//
-
-
-async function checkInvitation(){
-
-
-const invitation =
-
-localStorage.getItem(
-"coiffs-invitation"
-);
-
-
-if(
-
-!invitation ||
-
-!currentUser
-
-){
-
-return;
-
-}
-
-
-const data =
-
-JSON.parse(
-invitation
-);
-
-
-await acceptInvitation(
-
-
-data.familyID,
-
-data.invitationID
-
-
-);
-
-
-localStorage.removeItem(
-
-"coiffs-invitation"
-
-);
-
-
-}
-
-
-
-
-//------------------//
-// ACCUEIL
-//------------------//
-
-
-async function showHome(){
-
-
-await checkInvitation();
-
-
-if(!currentUser){
-
-
-showConnection();
-
-return;
-
-
-}
-
-
-if(
-
-currentUser.familyID
-
-){
-
-showFamilyCard();
-
-return;
-
-}
-
-
-if(
-
-currentUser.age < 18
-
-){
-
-showMinorHome();
-
-return;
-
-}
-
-
-showAdultHome();
-
-
-}
 
 //------------------//
 // UTILITAIRES
 //------------------//
 
 
-function formatMembers(
+function convertImage(file){
 
 
-number
+return new Promise(
+
+(resolve)=>{
 
 
-){
+const reader =
+
+new FileReader();
 
 
-if(number <= 1){
+reader.onload = ()=>{
 
 
-return "1 membre";
+resolve(
+reader.result
+);
+
+
+};
+
+
+reader.readAsDataURL(
+file
+);
 
 
 }
 
-
-return `${number} membres`;
-
-
-}
-
-
-
-
-function isAdult(){
-
-
-if(!currentUser){
-
-return false;
-
-}
-
-
-return (
-
-currentUser.age >= 18
 
 );
 
@@ -3083,157 +2027,39 @@ currentUser.age >= 18
 
 
 
-function hasFamily(){
+function generateColor(){
 
 
-if(!currentUser){
+const colors = [
 
-return false;
+"#FF6B6B",
+"#4D96FF",
+"#FFD93D",
+"#6BCB77",
+"#845EF7",
+"#FF922B",
+"#00C2A8",
+"#F06595"
 
-}
-
-
-return Boolean(
-
-currentUser.familyID
-
-);
-
-
-}
-
-//------------------//
-// SÉCURITÉS
-//------------------//
+];
 
 
-function validateFirstname(
-firstname
-){
+return colors[
 
-return (
+Math.floor(
 
-firstname.length >= 2 &&
+Math.random()
+*
+colors.length
 
-firstname.length <= 25
+)
 
-);
+];
 
 
 }
 
 
-
-function validatePassword(
-password
-){
-
-return (
-
-password.length >= 8
-
-);
-
-
-}
-
-
-
-function validateAge(
-age
-){
-
-return (
-
-age >= 1 &&
-
-age <= 120
-
-);
-
-
-}
-
-
-
-function validateFamilyName(
-name
-){
-
-return (
-
-name.length >= 3 &&
-
-name.length <= 30
-
-);
-
-
-}
-
-
-
-function validateFamilyID(
-id
-){
-
-return (
-
-String(id).length === 10
-
-);
-
-
-}
-
-
-
-//------------------//
-// ÉTATS
-//------------------//
-
-
-function showLoading(){
-
-
-const loadingScreen =
-
-document.getElementById(
-"loading-screen"
-);
-
-
-loadingScreen.style.display =
-
-"flex";
-
-
-}
-
-
-
-function hideLoading(){
-
-
-const loadingScreen =
-
-document.getElementById(
-"loading-screen"
-);
-
-
-loadingScreen.style.display =
-
-"none";
-
-
-}
-
-
-
-//------------------//
-// NOTIFICATIONS
-//------------------//
 
 
 function showMessage(
@@ -3251,8 +2077,7 @@ popupContainer.innerHTML =
 
 `
 
-<h2
-class="section-title">
+<h2>
 
 ${title}
 
@@ -3286,253 +2111,52 @@ OK
 
 
 //------------------//
-// ACTUALISATION
+// EXPORTS
 //------------------//
 
 
-async function refreshFamily(){
+window.login =
+login;
 
+window.register =
+register;
 
-if(
+window.logout =
+logout;
 
-!currentUser ||
+window.showHome =
+showHome;
 
-!currentUser.familyID
+window.closePopup =
+closePopup;
 
-){
+window.showProfile =
+showProfile;
 
-return;
+window.createFamily =
+createFamily;
 
-}
+window.joinFamily =
+joinFamily;
 
+window.openFamily =
+openFamily;
 
-try{
+window.leaveFamily =
+leaveFamily;
 
+window.generateInvitation =
+generateInvitation;
 
-currentFamily =
-
-await getFamily(
-
-currentUser.familyID
-
-);
-
-
-}
-
-
-catch(error){
-
-
-console.error(error);
-
-
-}
-
-
-}
+window.joinInvitation =
+joinInvitation;
 
 
 
 
 //------------------//
-// DÉCONNEXION
+// PROFIL
 //------------------//
-
-
-window.addEventListener(
-
-"beforeunload",
-
-()=>{
-
-
-if(
-
-popupBackground.style.display ===
-"flex"
-
-){
-
-closePopup();
-
-}
-
-
-}
-
-
-);
-
-
-
-
-//------------------//
-// VÉRIFICATIONS
-//------------------//
-
-
-function canCreateFamily(){
-
-
-if(
-
-!currentUser
-
-){
-
-return false;
-
-}
-
-
-if(
-
-currentUser.age < 18
-
-){
-
-return false;
-
-}
-
-
-if(
-
-currentUser.familyID
-
-){
-
-return false;
-
-}
-
-
-return true;
-
-
-}
-
-
-
-function canJoinFamily(){
-
-
-if(
-
-!currentUser
-
-){
-
-return false;
-
-}
-
-
-if(
-
-currentUser.familyID
-
-){
-
-return false;
-
-}
-
-
-return true;
-
-
-}
-
-
-
-function isAdmin(){
-
-
-if(
-
-!currentUser
-
-){
-
-return false;
-
-}
-
-
-return (
-
-currentUser.role ===
-"admin"
-
-);
-
-
-}
-
-//------------------//
-// MISE À JOUR
-//------------------//
-
-
-setInterval(
-
-
-async()=>{
-
-
-if(
-
-currentUser
-
-){
-
-await refreshUser();
-
-}
-
-
-if(
-
-currentFamily
-
-){
-
-await refreshFamily();
-
-}
-
-
-},
-
-30000
-
-
-);
-
-
-
-
-//------------------//
-// VERSION
-//------------------//
-
-
-const COIFFS_VERSION =
-
-"1.0.0";
-
-//------------------//
-// INITIALISATION
-//------------------//
-
-
-document.addEventListener(
-
-"DOMContentLoaded",
-
-()=>{
 
 
 if(
@@ -3541,7 +2165,348 @@ profileButton
 
 ){
 
-profileButton.onclick = () =>{
+profileButton.onclick = ()=>{
+
+
+if(
+
+currentUser
+
+){
+
+showProfile();
+
+}
+
+
+};
+
+
+}//------------------//
+// INVITATIONS
+//------------------//
+
+
+async function generateInvitation(){
+
+
+const expiration =
+
+document.getElementById(
+"invitation-expiration"
+).value;
+
+
+const limit =
+
+Number(
+
+document.getElementById(
+"invitation-limit"
+).value
+
+);
+
+
+const result =
+
+await callAPI(
+
+"create-invitation",
+
+{
+
+familyID:
+currentFamily.id,
+
+adminID:
+currentUser.id,
+
+expiration,
+
+limit
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+const link =
+
+`${window.location.origin}/invitation.html?id=${result.id}`;
+
+
+navigator.clipboard.writeText(
+link
+);
+
+
+showMessage(
+
+"Invitation créée",
+
+"Le lien a été copié."
+
+);
+
+
+}
+
+
+
+
+async function joinInvitation(
+invitationID
+){
+
+
+const result =
+
+await callAPI(
+
+"join-invitation",
+
+{
+
+invitationID,
+
+userID:
+currentUser.id
+
+}
+
+);
+
+
+if(
+
+!result.success
+
+){
+
+return;
+
+}
+
+
+currentUser.familyID =
+
+result.family.id;
+
+
+currentUser.familyName =
+
+result.family.name;
+
+
+currentUser.role =
+
+"member";
+
+
+showHome();
+
+
+}
+
+
+
+
+//------------------//
+// UTILITAIRES
+//------------------//
+
+
+function convertImage(file){
+
+
+return new Promise(
+
+(resolve)=>{
+
+
+const reader =
+
+new FileReader();
+
+
+reader.onload = ()=>{
+
+
+resolve(
+reader.result
+);
+
+
+};
+
+
+reader.readAsDataURL(
+file
+);
+
+
+}
+
+
+);
+
+
+}
+
+
+
+
+function generateColor(){
+
+
+const colors = [
+
+"#FF6B6B",
+"#4D96FF",
+"#FFD93D",
+"#6BCB77",
+"#845EF7",
+"#FF922B",
+"#00C2A8",
+"#F06595"
+
+];
+
+
+return colors[
+
+Math.floor(
+
+Math.random()
+*
+colors.length
+
+)
+
+];
+
+
+}
+
+
+
+
+function showMessage(
+title,
+message
+){
+
+
+popupBackground.style.display =
+
+"flex";
+
+
+popupContainer.innerHTML =
+
+`
+
+<h2>
+
+${title}
+
+</h2>
+
+
+<p>
+
+${message}
+
+</p>
+
+
+<br>
+
+
+<button
+class="primary-button"
+onclick="closePopup()">
+
+OK
+
+</button>
+
+`;
+
+
+}
+
+
+
+
+//------------------//
+// EXPORTS
+//------------------//
+
+
+window.login =
+login;
+
+window.register =
+register;
+
+window.logout =
+logout;
+
+window.showHome =
+showHome;
+
+window.closePopup =
+closePopup;
+
+window.showProfile =
+showProfile;
+
+window.createFamily =
+createFamily;
+
+window.joinFamily =
+joinFamily;
+
+window.openFamily =
+openFamily;
+
+window.leaveFamily =
+leaveFamily;
+
+window.generateInvitation =
+generateInvitation;
+
+window.joinInvitation =
+joinInvitation;
+
+
+
+
+//------------------//
+// PROFIL
+//------------------//
+
+
+if(
+
+profileButton
+
+){
+
+profileButton.onclick = ()=>{
 
 
 if(
@@ -3559,455 +2524,3 @@ showProfile();
 
 
 }
-
-
-}
-
-);
-
-
-
-
-//------------------//
-// RÉINITIALISATION
-//------------------//
-
-
-function resetApplication(){
-
-
-currentUser = null;
-
-currentFamily = null;
-
-currentRole = null;
-
-
-localStorage.removeItem(
-
-"coiffs-user-id"
-
-);
-
-
-localStorage.removeItem(
-
-"coiffs-invitation"
-
-);
-
-
-updateHeader();
-
-
-showConnection();
-
-
-}
-
-
-
-
-//------------------//
-// INFORMATIONS
-//------------------//
-
-
-function getCurrentUser(){
-
-
-return currentUser;
-
-
-}
-
-
-
-function getCurrentFamily(){
-
-
-return currentFamily;
-
-
-}
-
-
-
-function getCurrentRole(){
-
-
-return currentRole;
-
-
-}
-
-
-
-
-//------------------//
-// UTILITAIRES
-//------------------//
-
-
-function generateAccountID(){
-
-
-let id = "";
-
-
-for(
-
-let i = 0;
-
-i < 10;
-
-i++
-
-){
-
-
-id += Math.floor(
-
-Math.random() * 10
-
-);
-
-
-}
-
-
-return id;
-
-
-}
-
-
-
-
-function generateFamilyID(){
-
-
-let id = "";
-
-
-for(
-
-let i = 0;
-
-i < 10;
-
-i++
-
-){
-
-
-id += Math.floor(
-
-Math.random() * 10
-
-);
-
-
-}
-
-
-return id;
-
-
-}
-
-
-
-
-function generateInvitationID(){
-
-
-let id = "";
-
-
-for(
-
-let i = 0;
-
-i < 10;
-
-i++
-
-){
-
-
-id += Math.floor(
-
-Math.random() * 10
-
-);
-
-
-}
-
-
-return id;
-
-
-}
-
-
-
-
-//------------------//
-// FORMATAGE
-//------------------//
-
-
-function capitalize(
-
-
-text
-
-
-){
-
-
-if(!text){
-
-return "";
-
-}
-
-
-return (
-
-
-text.charAt(0)
-.toUpperCase()
-
-+
-
-text.slice(1)
-.toLowerCase()
-
-
-);
-
-
-}
-
-
-
-
-function sanitizeText(
-
-
-text
-
-
-){
-
-
-return text
-
-.trim()
-
-.replace(
-
-/</g,
-
-""
-
-)
-
-.replace(
-
-/>/g,
-
-""
-
-);
-
-
-}
-
-
-
-
-//------------------//
-// POP-UPS
-//------------------//
-
-
-function clearPopup(){
-
-
-popupContainer.innerHTML =
-
-"";
-
-
-}
-
-
-
-
-function openPopup(){
-
-
-popupBackground.style.display =
-
-"flex";
-
-
-}
-
-
-
-
-//------------------//
-// VÉRIFICATIONS
-//------------------//
-
-
-function isConnected(){
-
-
-return Boolean(
-
-currentUser
-
-);
-
-
-}
-
-
-
-
-function hasInvitation(){
-
-
-return Boolean(
-
-localStorage.getItem(
-
-"coiffs-invitation"
-
-)
-
-
-);
-
-
-}
-
-
-
-
-//------------------//
-// COMPATIBILITÉ
-//------------------//
-
-
-function isMobile(){
-
-
-return /Android|iPhone|iPad/i
-
-.test(
-
-navigator.userAgent
-
-);
-
-
-}
-
-
-
-
-//------------------//
-// EXPORTS
-//------------------//
-
-
-window.showHome =
-
-showHome;
-
-
-window.logout =
-
-logout;
-
-
-window.closePopup =
-
-closePopup;
-
-
-window.showJoinFamily =
-
-showJoinFamily;
-
-
-window.showCreateFamily =
-
-showCreateFamily;
-
-
-window.openFamily =
-
-openFamily;
-
-
-window.showProfile =
-
-showProfile;
-
-
-window.leaveFamily =
-
-leaveFamily;
-
-
-window.showInvitationSettings =
-
-showInvitationSettings;
-
-
-window.showKickMembers =
-
-showKickMembers;
-
-
-window.showTransferAdmin =
-
-showTransferAdmin;
-
-
-window.showDeleteFamily =
-
-showDeleteFamily;
-
-
-window.login =
-
-login;
-
-
-window.register =
-
-register;
-
-
-window.joinFamily =
-
-joinFamily;
-
-
-window.createFamily =
-
-createFamily;
-
-
-window.copyInvitationLink =
-
-copyInvitationLink;
