@@ -1074,15 +1074,15 @@ type="password">
 <p
 class="small-title">
 
-Photo (optionnelle)
+Lien de la photo (optionnel)
 
 </p>
 
 
 <input
 id="register-picture"
-type="file"
-accept="image/*">
+type="url"
+placeholder="https://exemple.com/image.png">
 
 
 <br>
@@ -1163,13 +1163,11 @@ document.getElementById(
 
 
 
-const picture =
+const pictureURL =
 
 document.getElementById(
-
 "register-picture"
-
-).files[0];
+).value.trim();
 
 
 
@@ -1186,29 +1184,6 @@ if(
 return;
 
 }
-
-
-
-let pictureURL =
-
-null;
-
-
-if(
-
-picture
-
-){
-
-pictureURL =
-
-await convertImage(
-picture
-);
-
-
-}
-
 
 
 const color =
