@@ -9,35 +9,86 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1.0">
 
+
 <title>Coiffs</title>
+
 
 <meta name="theme-color"
 content="#09090B">
 
+
 <link rel="stylesheet"
 href="./style.css">
 
-<!-- Icône iPhone / iPad écran d'accueil -->
-<link rel="apple-touch-icon" href="logo.png">
 
-<!-- Nom de l'application -->
-<meta name="apple-mobile-web-app-title" content="Coiffs">
+<!-- PWA -->
 
-<!-- Mode application plein écran -->
-<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="manifest"
+href="manifest.json">
 
-<!-- Couleur de la barre d'état -->
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<!-- Icône Android / navigateurs -->
-<link rel="icon" type="image/png" href="logo.png">
+<!-- Apple -->
 
-<!-- Manifest (optionnel mais recommandé) -->
-<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon"
+href="https://coiffs.vercel.app/public/logo.png">
+
+
+<meta name="apple-mobile-web-app-title"
+content="Coiffs">
+
+
+<meta name="apple-mobile-web-app-capable"
+content="yes">
+
+
+<meta name="apple-mobile-web-app-status-bar-style"
+content="black-translucent">
+
+
+
+<!-- Android / navigateur -->
+
+<link rel="icon"
+type="image/png"
+href="https://coiffs.vercel.app/public/logo.png">
+
+
 
 </head>
 
+
 <body>
+
+
+
+<!-- INSTALLATION APPLICATION -->
+
+
+<div id="install-screen">
+
+
+<img
+src="https://coiffs.vercel.app/public/logo.png"
+class="install-logo">
+
+
+<h2>
+Lancer l’application
+</h2>
+
+
+<button
+onclick="openApplication()">
+
+Ouvrir
+
+</button>
+
+
+</div>
+
+
+
 
 
 <!-- ECRAN DE BIENVENUE -->
@@ -46,19 +97,31 @@ href="./style.css">
 <div id="welcome-screen"
 class="screen active">
 
+
 <div class="welcome-container">
 
+
 <h1>
+
 Bienvenue sur
+
 </h1>
 
+
 <h2>
+
 Coiffs
+
 </h2>
 
-</div>
 
 </div>
+
+
+</div>
+
+
+
 
 
 
@@ -69,13 +132,18 @@ Coiffs
 class="screen">
 
 
+
+
+
 <!-- HEADER -->
 
 
 <header id="header">
 
 
+
 <div id="profile-button">
+
 
 <span id="profile-letter">
 
@@ -83,11 +151,15 @@ class="screen">
 
 </span>
 
+
 </div>
 
 
 
+
+
 <div id="header-title">
+
 
 <h1>
 
@@ -95,11 +167,15 @@ Coiffs
 
 </h1>
 
+
 </div>
 
 
 
+
+
 <div id="account-container">
+
 
 
 <p id="account-id">
@@ -109,6 +185,8 @@ Non connecté
 </p>
 
 
+
+
 <button id="logout-button">
 
 Déconnexion
@@ -116,10 +194,16 @@ Déconnexion
 </button>
 
 
+
 </div>
 
 
+
 </header>
+
+
+
+
 
 
 
@@ -128,46 +212,42 @@ Déconnexion
 
 <main id="main-container">
 
+
 <!--
 
-TOUT LE CONTENU
-SERA GÉNÉRÉ
-EN JAVASCRIPT.
-
+Généré par JavaScript :
 
 Connexion
 
-↓
-
 Créer un compte
-
-↓
 
 Accueil
 
-↓
-
 Famille
-
-↓
 
 Administration
 
-↓
-
 etc...
-
 
 -->
 
+
 </main>
+
+
+
 
 
 </div>
 
 
 
-<!-- POP-UP -->
+
+
+
+
+
+<!-- POPUP -->
 
 
 <div id="popup-background">
@@ -175,19 +255,18 @@ etc...
 
 <div id="popup-container">
 
-<!--
 
-TOUTES LES POP-UP
-SERONT AJOUTÉES
-EN JAVASCRIPT.
+<!-- Généré par JavaScript -->
 
-
--->
 
 </div>
 
 
 </div>
+
+
+
+
 
 
 
@@ -196,7 +275,9 @@ EN JAVASCRIPT.
 
 <div id="loading-screen">
 
+
 <div class="loader"></div>
+
 
 <p>
 
@@ -204,7 +285,11 @@ Chargement...
 
 </p>
 
+
 </div>
+
+
+
 
 
 
@@ -216,6 +301,51 @@ Chargement...
 <script src="./app.js"></script>
 
 
+
+<script>
+
+
+// Détection installation PWA
+
+
+window.addEventListener(
+"load",
+()=>{
+
+
+const standalone =
+
+window.matchMedia(
+"(display-mode: standalone)"
+).matches
+||
+window.navigator.standalone;
+
+
+
+if(standalone){
+
+
+document.body.classList.add(
+"installed"
+);
+
+
+}
+
+
+
+}
+
+);
+
+
+
+</script>
+
+
+
 </body>
+
 
 </html>
