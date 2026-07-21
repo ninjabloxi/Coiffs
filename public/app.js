@@ -783,6 +783,11 @@ message:
 
 async function checkConnection(){
 
+if(loadUserData()){
+
+return;
+
+}
 
 const userID =
 
