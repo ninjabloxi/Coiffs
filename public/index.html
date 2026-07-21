@@ -9,50 +9,13 @@
 <meta name="viewport"
 content="width=device-width,initial-scale=1.0">
 
-
 <title>Coiffs</title>
 
+<link rel="manifest" href="manifest.json">
 
-<meta name="theme-color"
-content="#09090B">
+<link rel="apple-touch-icon" href="logo.png">
 
-
-<link rel="stylesheet"
-href="./style.css">
-
-
-<!-- PWA -->
-
-<link rel="manifest"
-href="manifest.json">
-
-
-<!-- Apple -->
-
-<link rel="apple-touch-icon"
-href="https://coiffs.vercel.app/public/logo.png">
-
-
-<meta name="apple-mobile-web-app-title"
-content="Coiffs">
-
-
-<meta name="apple-mobile-web-app-capable"
-content="yes">
-
-
-<meta name="apple-mobile-web-app-status-bar-style"
-content="black-translucent">
-
-
-
-<!-- Android / navigateur -->
-
-<link rel="icon"
-type="image/png"
-href="https://coiffs.vercel.app/public/logo.png">
-
-
+<meta name="theme-color" content="#09090B">
 
 </head>
 
@@ -60,260 +23,10 @@ href="https://coiffs.vercel.app/public/logo.png">
 <body>
 
 
-
-<!-- INSTALLATION APPLICATION -->
-
-
-<div id="install-screen">
-
-
-<img
-src="https://coiffs.vercel.app/public/logo.png"
-class="install-logo">
-
-
-<h2>
-Lancer l’application
-</h2>
-
-
-<button
-onclick="openApplication()">
-
-Ouvrir
-
-</button>
-
-
-</div>
-
-
-
-
-
-<!-- ECRAN DE BIENVENUE -->
-
-
-<div id="welcome-screen"
-class="screen active">
-
-
-<div class="welcome-container">
-
-
-<h1>
-
-Bienvenue sur
-
-</h1>
-
-
-<h2>
-
-Coiffs
-
-</h2>
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-<!-- APPLICATION -->
-
-
-<div id="app"
-class="screen">
-
-
-
-
-
-<!-- HEADER -->
-
-
-<header id="header">
-
-
-
-<div id="profile-button">
-
-
-<span id="profile-letter">
-
-?
-
-</span>
-
-
-</div>
-
-
-
-
-
-<div id="header-title">
-
-
-<h1>
-
-Coiffs
-
-</h1>
-
-
-</div>
-
-
-
-
-
-<div id="account-container">
-
-
-
-<p id="account-id">
-
-Non connecté
-
-</p>
-
-
-
-
-<button id="logout-button">
-
-Déconnexion
-
-</button>
-
-
-
-</div>
-
-
-
-</header>
-
-
-
-
-
-
-
-<!-- CONTENU PRINCIPAL -->
-
-
-<main id="main-container">
-
-
-<!--
-
-Généré par JavaScript :
-
-Connexion
-
-Créer un compte
-
-Accueil
-
-Famille
-
-Administration
-
-etc...
-
--->
-
-
-</main>
-
-
-
-
-
-</div>
-
-
-
-
-
-
-
-
-<!-- POPUP -->
-
-
-<div id="popup-background">
-
-
-<div id="popup-container">
-
-
-<!-- Généré par JavaScript -->
-
-
-</div>
-
-
-</div>
-
-
-
-
-
-
-
-<!-- CHARGEMENT -->
-
-
-<div id="loading-screen">
-
-
-<div class="loader"></div>
-
-
-<p>
-
-Chargement...
-
-</p>
-
-
-</div>
-
-
-
-
-
-
-
-<script src="./mongodb.js"></script>
-
-<script src="./animations.js"></script>
-
-<script src="./app.js"></script>
-
-
-
 <script>
 
 
-// Détection installation PWA
-
-
-window.addEventListener(
-"load",
-()=>{
-
-
-const standalone =
+const isStandalone =
 
 window.matchMedia(
 "(display-mode: standalone)"
@@ -323,26 +36,29 @@ window.navigator.standalone;
 
 
 
-if(standalone){
+if(isStandalone){
 
 
-document.body.classList.add(
-"installed"
+window.location.replace(
+"app.html"
 );
 
 
 }
 
+else{
+
+
+window.location.replace(
+"web.html"
+);
 
 
 }
-
-);
 
 
 
 </script>
-
 
 
 </body>
