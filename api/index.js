@@ -2346,10 +2346,65 @@ export default async function handler(
 
     try {
 
+        // Vérification serveur via navigateur
+        if (request.method === "GET") {
 
-        if (
-            request.method !== "POST"
-        ) {
+            try {
+
+                const collections =
+                    await getCollections();
+
+
+                const health =
+                    await databaseHealthCheck(
+                        collections
+                    );
+
+
+                return response
+                    .status(200)
+                    .json({
+
+                        online: true,
+
+                        status:
+                            "serveur en ligne",
+
+                        database:
+                            health,
+
+                        timestamp:
+                            new Date().toISOString()
+
+                    });
+
+
+            } catch(error) {
+
+
+                return response
+                    .status(503)
+                    .json({
+
+                        online:false,
+
+                        status:
+                            "serveur crash/hors ligne",
+
+                        message:
+                            error.message,
+
+                        timestamp:
+                            new Date().toISOString()
+
+                    });
+
+            }
+
+        }
+
+
+        if (request.method !== "POST") {
 
             return response
                 .status(405)
@@ -2365,25 +2420,20 @@ export default async function handler(
         }
 
 
-
         const collections =
             await getCollections();
-
 
 
         const body =
             request.body || {};
 
 
-
         const action =
             body.action;
 
 
-
         const data =
             body.data || {};
-
 
 
         const result =
@@ -2395,12 +2445,9 @@ export default async function handler(
             );
 
 
-
         return response
             .status(200)
-            .json(
-                result
-            );
+            .json(result);
 
 
 
@@ -2410,57 +2457,24 @@ export default async function handler(
         logError(
             "API_FATAL_ERROR",
             {
-                message:
-                    error.message,
-
-                stack:
-                    error.stack
+                message:error.message
             }
         );
-
-
-
-        if (
-            error instanceof APIError
-        ) {
-
-            return response
-                .status(
-                    error.status
-                )
-                .json({
-
-                    success:false,
-
-                    code:
-                        error.code,
-
-                    message:
-                        error.message,
-
-                    details:
-                        error.details
-
-                });
-
-        }
-
 
 
         return response
             .status(500)
             .json({
 
-                success:false,
+                online:false,
 
-                code:
-                    ERROR_CODES.UNKNOWN_ERROR,
+                status:
+                    "serveur crash",
 
                 message:
-                    "Erreur interne du serveur."
+                    error.message
 
             });
-
 
     }
 
