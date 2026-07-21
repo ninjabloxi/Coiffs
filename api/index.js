@@ -20,7 +20,6 @@ async function connectMongo() {
     return client;
 }
 
-// Fonction utilitaire pour récupérer les collections connectées
 async function getCollections() {
     const mongoClient = await connectMongo();
     const database = mongoClient.db("Coiffs");
@@ -539,11 +538,8 @@ export default async function handler(request, response) {
             });
         }
 
-        // Connexion à MongoDB et récupération des collections à chaque requête
         const collections = await getCollections();
-
         const { action, data } = request.body;
-
         const result = await executeAction(action, data, collections);
 
         return response.status(200).json(result);
