@@ -1074,6 +1074,9 @@ currentUser.id
 isConnected = true;
 
 
+saveUserData();
+
+
 updateHeader();
 
 
@@ -1340,6 +1343,9 @@ currentUser.id
 isConnected = true;
 
 
+saveUserData();
+
+
 updateHeader();
 
 
@@ -1371,6 +1377,9 @@ localStorage.removeItem(
 INVITATION_STORAGE
 
 );
+
+
+deleteUserData();
 
 
 currentUser = null;
