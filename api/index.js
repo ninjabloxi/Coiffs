@@ -105,13 +105,11 @@ generateID();
 
 while(
 
-
 await users.findOne({
 
 id
 
 })
-
 
 ){
 
@@ -142,13 +140,11 @@ generateID();
 
 while(
 
-
 await families.findOne({
 
 id
 
 })
-
 
 ){
 
@@ -179,13 +175,11 @@ generateID();
 
 while(
 
-
 await invitations.findOne({
 
 id
 
 })
-
 
 ){
 
@@ -203,6 +197,9 @@ return id;
 
 }
 
+
+
+
 //------------------//
 // API
 //------------------//
@@ -216,13 +213,23 @@ response
 try{
 
 
-if(request.method !== "POST"){
+if(
 
-return response.status(405).json({
+request.method !==
+"POST"
+
+){
+
+return response
+
+.status(405)
+
+.json({
 
 success:false
 
 });
+
 
 }
 
@@ -235,7 +242,9 @@ data
 } = request.body;
 
 
-const result = await executeAction(
+const result =
+
+await executeAction(
 
 action,
 data
@@ -243,7 +252,11 @@ data
 );
 
 
-return response.status(200).json(
+return response
+
+.status(200)
+
+.json(
 
 result
 
@@ -252,17 +265,27 @@ result
 
 }
 
+
 catch(error){
 
 
-console.error(error);
+console.error(
+
+error
+
+);
 
 
-return response.status(500).json({
+return response
+
+.status(500)
+
+.json({
 
 success:false,
 
-message:error.message
+message:
+error.message
 
 });
 
@@ -312,13 +335,20 @@ const user = {
 id,
 
 firstname:
-data.firstname.trim(),
+String(
+data.firstname
+)
+.trim(),
 
 age:
-Number(data.age),
+Number(
+data.age
+),
 
 password:
-data.password,
+String(
+data.password
+),
 
 photo:
 data.pictureURL ||
@@ -386,10 +416,14 @@ const user =
 await users.findOne({
 
 id:
-String(data.id),
+String(
+data.id
+),
 
 password:
-String(data.password)
+String(
+data.password
+)
 
 });
 
@@ -445,7 +479,9 @@ const user =
 await users.findOne({
 
 id:
-String(data.id)
+String(
+data.id
+)
 
 });
 
@@ -472,9 +508,6 @@ user
 
 }
 
-
-
-
 //------------------//
 // FAMILLES
 //------------------//
@@ -483,115 +516,187 @@ user
 async function createFamily(data){
 
 
-    const id =
+if(
 
-    await generateFamilyID();
+!data.name ||
 
+!data.password ||
 
-    const user =
+!data.userID
 
-    await users.findOne({
+){
 
-        id:
-        data.userID
+return{
 
-    });
+success:false,
 
+message:
+"Informations invalides."
 
-    if(!user){
+};
 
-        return {
-
-            success:false
-
-        };
-
-    }
+}
 
 
-    const family = {
+const user =
 
-        id,
+await users.findOne({
 
-        name:
-        data.name,
+id:
+String(
+data.userID
+)
 
-        password:
-        data.password,
-
-        adminID:
-        data.userID,
-
-        members:[
-
-            {
-
-                id:
-                data.userID,
-
-                firstname:
-                user.firstname,
-
-                photo:
-                user.photo,
-
-                color:
-                user.color,
-
-                role:
-                "admin"
-
-            }
-
-        ]
-
-    };
+});
 
 
-    await families.insertOne(
-        family
-    );
+if(!user){
+
+return{
+
+success:false,
+
+message:
+"Utilisateur introuvable."
+
+};
+
+}
 
 
-    await users.updateOne(
+if(
 
-        {
+user.age < 18
 
-            id:
-            data.userID
+){
 
-        },
+return{
 
-        {
+success:false,
 
-            $set:{
+message:
+"Vous devez être majeur."
 
-                familyID:
-                id,
+};
 
-                familyName:
-                data.name,
-
-                role:
-                "admin"
-
-            }
-
-        }
-
-    );
+}
 
 
-    return {
+if(
 
-        success:true,
+user.familyID
 
-        family
+){
 
-    };
+return{
+
+success:false,
+
+message:
+"Vous appartenez déjà à une famille."
+
+};
+
+}
+
+
+const id =
+
+await generateFamilyID();
+
+
+const family = {
+
+
+id,
+
+name:
+String(
+data.name
+).trim(),
+
+password:
+String(
+data.password
+),
+
+adminID:
+user.id,
+
+members:[
+
+{
+
+id:
+user.id,
+
+firstname:
+user.firstname,
+
+photo:
+user.photo,
+
+color:
+user.color,
+
+role:
+"admin"
+
+}
+
+]
+
+
+};
+
+
+await families.insertOne(
+family
+);
+
+
+await users.updateOne(
+
+{
+
+id:
+user.id
+
+},
+
+{
+
+$set:{
+
+familyID:
+family.id,
+
+familyName:
+family.name,
+
+role:
+"admin"
+
+}
+
+}
+
+);
+
+
+return{
+
+success:true,
+
+family
+
+};
 
 
 }
+
+
+
 
 //------------------//
 // RÉCUPÉRATIONS
@@ -601,12 +706,29 @@ async function createFamily(data){
 async function getFamily(data){
 
 
+if(
+
+!data.id
+
+){
+
+return{
+
+success:false
+
+};
+
+}
+
+
 const family =
 
 await families.findOne({
 
 id:
+String(
 data.id
+)
 
 });
 
@@ -641,163 +763,198 @@ family
 async function joinFamily(data){
 
 
-    const family =
+if(
 
-    await families.findOne({
+!data.familyID ||
 
-        id:
-        data.familyID
+!data.password ||
 
-    });
+!data.userID
 
+){
 
-    if(!family){
+return{
 
-        return {
+success:false,
 
-            success:false,
+message:
+"Informations invalides."
 
-            message:
-            "Famille introuvable."
+};
 
-        };
+}
 
-    }
 
+const family =
 
-    if(
+await families.findOne({
 
-        family.password !==
-        data.password
+id:
+String(
+data.familyID
+)
 
-    ){
+});
 
-        return {
 
-            success:false,
+if(!family){
 
-            message:
-            "Mot de passe invalide."
+return{
 
-        };
+success:false,
 
-    }
+message:
+"Famille introuvable."
 
+};
 
-    const user =
+}
 
-    await users.findOne({
 
-        id:
-        data.userID
+if(
 
-    });
+family.password !==
+String(
+data.password
+)
 
+){
 
-    if(!user){
+return{
 
-        return {
+success:false,
 
-            success:false
+message:
+"Mot de passe invalide."
 
-        };
+};
 
-    }
+}
 
 
-    if(user.familyID){
+const user =
 
-        return {
+await users.findOne({
 
-            success:false,
+id:
+String(
+data.userID
+)
 
-            message:
-            "Vous appartenez déjà à une famille."
+});
 
-        };
 
-    }
+if(!user){
 
+return{
 
-    const member = {
+success:false,
 
-        id:
-        user.id,
+message:
+"Utilisateur introuvable."
 
-        firstname:
-        user.firstname,
+};
 
-        photo:
-        user.photo,
+}
 
-        color:
-        user.color,
 
-        role:
-        "member"
+if(
 
-    };
+user.familyID
 
+){
 
-    await families.updateOne(
+return{
 
-        {
+success:false,
 
-            id:
-            family.id
+message:
+"Vous appartenez déjà à une famille."
 
-        },
+};
 
-        {
+}
 
-            $push:{
 
-                members:
-                member
+const member = {
 
-            }
+id:
+user.id,
 
-        }
+firstname:
+user.firstname,
 
-    );
+photo:
+user.photo,
 
+color:
+user.color,
 
-    await users.updateOne(
+role:
+"member"
 
-        {
+};
 
-            id:
-            user.id
 
-        },
+await families.updateOne(
 
-        {
+{
 
-            $set:{
+id:
+family.id
 
-                familyID:
-                family.id,
+},
 
-                familyName:
-                family.name,
+{
 
-                role:
-                "member"
+$push:{
 
-            }
+members:
+member
 
-        }
+}
 
-    );
+}
 
+);
 
-    return {
 
-        success:true,
+await users.updateOne(
 
-        family
+{
 
-    };
+id:
+user.id
+
+},
+
+{
+
+$set:{
+
+familyID:
+family.id,
+
+familyName:
+family.name,
+
+role:
+"member"
+
+}
+
+}
+
+);
+
+
+return{
+
+success:true,
+
+family
+
+};
 
 
 }
@@ -813,119 +970,118 @@ async function joinFamily(data){
 async function leaveFamily(data){
 
 
-    const user =
+const user =
 
-    await users.findOne({
+await users.findOne({
 
-        id:
-        data.userID
+id:
+String(
+data.userID
+)
 
-    });
-
-
-    if(
-
-        !user ||
-
-        !user.familyID
-
-    ){
-
-        return {
-
-            success:false
-
-        };
-
-    }
+});
 
 
-    if(
+if(
 
-        user.role ===
-        "admin"
+!user ||
 
-    ){
+!user.familyID
 
-        return {
+){
 
-            success:false,
+return{
 
-            message:
-            "L'administrateur ne peut pas quitter sa famille."
+success:false
 
-        };
-
-    }
-
-
-    await families.updateOne(
-
-        {
-
-            id:
-            user.familyID
-
-        },
-
-        {
-
-            $pull:{
-
-                members:{
-
-                    id:
-                    user.id
-
-                }
-
-            }
-
-        }
-
-    );
-
-
-    await users.updateOne(
-
-        {
-
-            id:
-            user.id
-
-        },
-
-        {
-
-            $set:{
-
-                familyID:
-                null,
-
-                familyName:
-                null,
-
-                role:
-                null
-
-            }
-
-        }
-
-    );
-
-
-    return {
-
-        success:true
-
-    };
-
+};
 
 }
 
 
+if(
 
+user.role ===
+"admin"
+
+){
+
+return{
+
+success:false,
+
+message:
+"L'administrateur ne peut pas quitter sa famille."
+
+};
+
+}
+
+
+await families.updateOne(
+
+{
+
+id:
+user.familyID
+
+},
+
+{
+
+$pull:{
+
+members:{
+
+id:
+user.id
+
+}
+
+}
+
+}
+
+);
+
+
+await users.updateOne(
+
+{
+
+id:
+user.id
+
+},
+
+{
+
+$set:{
+
+familyID:
+null,
+
+familyName:
+null,
+
+role:
+null
+
+}
+
+}
+
+);
+
+
+return{
+
+success:true
+
+};
+
+
+}
 
 //------------------//
 // INVITATIONS
@@ -935,48 +1091,80 @@ async function leaveFamily(data){
 async function createInvitation(data){
 
 
-    const id =
+if(
 
-    await generateInvitationID();
+!data.familyID ||
 
+!data.adminID ||
 
-    const invitation = {
+!data.expiration ||
 
-        id,
+!data.limit
 
-        familyID:
-        data.familyID,
+){
 
-        adminID:
-        data.adminID,
+return{
 
-        expiration:
-        data.expiration,
+success:false,
 
-        limit:
-        data.limit,
+message:
+"Informations invalides."
 
-        uses:
-        0,
+};
 
-        createdAt:
-        Date.now()
-
-    };
+}
 
 
-    await invitations.insertOne(
-        invitation
-    );
+const id =
+
+await generateInvitationID();
 
 
-    return {
+const invitation = {
 
-        success:true,
+id,
 
-        id
+familyID:
+String(
+data.familyID
+),
 
-    };
+adminID:
+String(
+data.adminID
+),
+
+expiration:
+String(
+data.expiration
+),
+
+limit:
+Number(
+data.limit
+),
+
+uses:
+0,
+
+createdAt:
+Date.now()
+
+};
+
+
+await invitations.insertOne(
+invitation
+);
+
+
+return{
+
+success:true,
+
+id
+
+};
 
 
 }
@@ -987,342 +1175,249 @@ async function createInvitation(data){
 async function getInvitation(data){
 
 
-    const invitation =
+const invitation =
 
-    await invitations.findOne({
+await invitations.findOne({
 
-        id:
-        data.invitationID
+id:
+String(
+data.invitationID
+)
 
-    });
-
-
-    if(!invitation){
-
-        return {
-
-            success:false
-
-        };
-
-    }
+});
 
 
-    return {
+if(!invitation){
 
-        success:true,
+return{
 
-        invitation
+success:false
 
-    };
+};
+
+}
+
+
+return{
+
+success:true,
+
+invitation
+
+};
 
 
 }
 
-//------------------//
-// INVITATIONS
-//------------------//
+
 
 
 async function joinInvitation(data){
 
 
-    const invitation =
+const invitation =
 
-    await invitations.findOne({
+await invitations.findOne({
 
-        id:
-        data.invitationID
+id:
+String(
+data.invitationID
+)
 
-    });
+});
 
 
-    if(!invitation){
+if(!invitation){
 
-        return {
+return{
 
-            success:false,
+success:false,
 
-            message:
-            "Invitation inexistante."
+message:
+"Invitation inexistante."
 
-        };
+};
 
-    }
+}
 
 
+if(
 
-    if(
+invitation.uses >=
+invitation.limit
 
-        invitation.expiration !==
-        "never"
+){
 
-    ){
+return{
 
+success:false,
 
-        let time = 0;
+message:
+"Invitation complète."
 
+};
 
-        if(
-            invitation.expiration === "24h"
-        ){
+}
 
-            time =
-            24 * 60 * 60 * 1000;
 
-        }
+const family =
 
+await families.findOne({
 
-        if(
-            invitation.expiration === "7d"
-        ){
+id:
+invitation.familyID
 
-            time =
-            7 * 24 * 60 * 60 * 1000;
+});
 
-        }
 
+const user =
 
-        if(
-            invitation.expiration === "30d"
-        ){
+await users.findOne({
 
-            time =
-            30 * 24 * 60 * 60 * 1000;
+id:
+String(
+data.userID
+)
 
-        }
+});
 
 
-        if(
+if(
 
-            Date.now() >
+!family ||
 
-            invitation.createdAt + time
+!user
 
-        ){
+){
 
-            return {
+return{
 
-                success:false,
+success:false
 
-                message:
-                "Invitation expirée."
+};
 
-            };
+}
 
-        }
 
+if(
 
-    }
+user.familyID
 
+){
 
+return{
 
+success:false,
 
-    if(
+message:
+"Vous avez déjà une famille."
 
-        invitation.uses >=
-        invitation.limit
+};
 
-    ){
+}
 
-        return {
 
-            success:false,
+const member = {
 
-            message:
-            "Invitation complète."
+id:
+user.id,
 
-        };
+firstname:
+user.firstname,
 
-    }
+photo:
+user.photo,
 
+color:
+user.color,
 
+role:
+"member"
 
+};
 
-    const family =
 
-    await families.findOne({
+await families.updateOne(
 
-        id:
-        invitation.familyID
+{
 
-    });
+id:
+family.id
 
+},
 
+{
 
-    const user =
+$push:{
 
-    await users.findOne({
+members:
+member
 
-        id:
-        data.userID
+}
 
-    });
+}
 
+);
 
 
-    if(
+await invitations.updateOne(
 
-        !family ||
+{
 
-        !user
+id:
+invitation.id
 
-    ){
+},
 
-        return {
+{
 
-            success:false
+$inc:{
 
-        };
+uses:1
 
-    }
+}
 
+}
 
+);
 
 
-    if(user.familyID){
+await users.updateOne(
 
-        return {
+{
 
-            success:false,
+id:
+user.id
 
-            message:
-            "Vous avez déjà une famille."
+},
 
-        };
+{
 
-    }
+$set:{
 
+familyID:
+family.id,
 
+familyName:
+family.name,
 
+role:
+"member"
 
+}
 
-    const member = {
+}
 
+);
 
-        id:
-        user.id,
 
+return{
 
-        firstname:
-        user.firstname,
+success:true,
 
+family
 
-        photo:
-        user.photo,
-
-
-        color:
-        user.color,
-
-
-        role:
-        "member"
-
-
-    };
-
-
-
-
-
-    await families.updateOne(
-
-        {
-
-            id:
-            family.id
-
-        },
-
-        {
-
-            $push:{
-
-                members:
-                member
-
-            }
-
-        }
-
-    );
-
-
-
-
-
-    await invitations.updateOne(
-
-        {
-
-            id:
-            invitation.id
-
-        },
-
-        {
-
-            $inc:{
-
-                uses:1
-
-            }
-
-        }
-
-    );
-
-
-
-
-
-    await users.updateOne(
-
-        {
-
-            id:
-            user.id
-
-        },
-
-        {
-
-            $set:{
-
-
-                familyID:
-                family.id,
-
-
-                familyName:
-                family.name,
-
-
-                role:
-                "member"
-
-
-            }
-
-        }
-
-    );
-
-
-
-
-
-    return {
-
-
-        success:true,
-
-
-        family
-
-
-    };
+};
 
 
 }
@@ -1330,7 +1425,86 @@ async function joinInvitation(data){
 
 
 
+//------------------//
+// ROUTEUR FINAL
+//------------------//
 
+
+async function executeAction(
+action,
+data
+){
+
+switch(action){
+
+
+case "create-user":
+
+return await createUser(data);
+
+
+case "login":
+
+return await loginUser(data);
+
+
+case "get-user":
+
+return await getUser(data);
+
+
+case "create-family":
+
+return await createFamily(data);
+
+
+case "get-family":
+
+return await getFamily(data);
+
+
+case "join-family":
+
+return await joinFamily(data);
+
+
+case "leave-family":
+
+return await leaveFamily(data);
+
+
+case "create-invitation":
+
+return await createInvitation(data);
+
+
+case "get-invitation":
+
+return await getInvitation(data);
+
+
+case "join-invitation":
+
+return await joinInvitation(data);
+
+
+default:
+
+
+return{
+
+success:false,
+
+message:
+"Action inconnue."
+
+};
+
+
+}
+
+
+}
 
 //------------------//
 // ROUTEUR FINAL
