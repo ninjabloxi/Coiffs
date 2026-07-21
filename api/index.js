@@ -2036,3 +2036,432 @@ async function getInvitation(data, collections) {
     };
 
 }
+
+async function joinInvitation(data, collections) {
+
+    const {
+        users,
+        families,
+        invitations
+    } = collections;
+
+
+    if (
+        !data ||
+        !data.invitationID ||
+        !data.userID
+    ) {
+
+        throw createError(
+            ERROR_CODES.INVITATION_INVALID_DATA,
+            "Informations invitation manquantes."
+        );
+
+    }
+
+
+    const invitation =
+        await invitations.findOne({
+            id:
+                String(data.invitationID)
+        });
+
+
+    if (!invitation) {
+
+        throw createError(
+            ERROR_CODES.INVITATION_NOT_FOUND,
+            "Invitation inexistante."
+        );
+
+    }
+
+
+    if (
+        isInvitationExpired(invitation)
+    ) {
+
+        throw createError(
+            ERROR_CODES.INVITATION_EXPIRED,
+            "Invitation expirée."
+        );
+
+    }
+
+
+    if (
+        invitation.uses >= invitation.limit
+    ) {
+
+        throw createError(
+            ERROR_CODES.INVITATION_LIMIT_REACHED,
+            "Invitation complète."
+        );
+
+    }
+
+
+    const family =
+        await findFamilyByID(
+            families,
+            invitation.familyID
+        );
+
+
+    const user =
+        await findUserByID(
+            users,
+            data.userID
+        );
+
+
+    if (!family || !user) {
+
+        throw createError(
+            ERROR_CODES.USER_NOT_FOUND,
+            "Utilisateur ou famille introuvable."
+        );
+
+    }
+
+
+    if (
+        user.familyID
+    ) {
+
+        throw createError(
+            ERROR_CODES.USER_ALREADY_IN_FAMILY,
+            "Utilisateur déjà dans une famille."
+        );
+
+    }
+
+
+    const member =
+        createMemberFromUser(
+            user,
+            "member"
+        );
+
+
+    await families.updateOne(
+        {
+            id:
+                family.id
+        },
+        {
+            $push:
+                {
+                    members:
+                        member
+                }
+        }
+    );
+
+
+    await invitations.updateOne(
+        {
+            id:
+                invitation.id
+        },
+        {
+            $inc:
+                {
+                    uses: 1
+                }
+        }
+    );
+
+
+    await users.updateOne(
+        {
+            id:
+                user.id
+        },
+        {
+            $set:
+                {
+                    familyID:
+                        family.id,
+
+                    familyName:
+                        family.name,
+
+                    role:
+                        "member",
+
+                    updatedAt:
+                        now()
+                }
+        }
+    );
+
+
+    return {
+        success:true,
+        family
+    };
+
+}
+
+async function executeAction(
+    action,
+    data,
+    collections,
+    rawBody
+) {
+
+    switch (action) {
+
+        case "create-user":
+
+            return await createUser(
+                data,
+                collections
+            );
+
+
+        case "login":
+
+            return await loginUser(
+                data,
+                collections
+            );
+
+
+        case "get-user":
+
+            return await getUser(
+                data,
+                collections
+            );
+
+
+        case "create-family":
+
+            return await createFamily(
+                data,
+                collections
+            );
+
+
+        case "get-family":
+
+            return await getFamily(
+                data,
+                collections
+            );
+
+
+        case "join-family":
+
+            return await joinFamily(
+                data,
+                collections
+            );
+
+
+        case "leave-family":
+
+            return await leaveFamily(
+                data,
+                collections
+            );
+
+
+        case "create-invitation":
+
+            return await createInvitation(
+                data,
+                collections
+            );
+
+
+        case "get-invitation":
+
+            return await getInvitation(
+                data,
+                collections
+            );
+
+
+        case "join-invitation":
+
+            return await joinInvitation(
+                data,
+                collections
+            );
+
+
+        case "health-check":
+
+            return {
+
+                success:true,
+
+                database:
+                    await databaseHealthCheck(
+                        collections
+                    )
+
+            };
+
+
+        default:
+
+            logWarning(
+                "UNKNOWN_ACTION",
+                {
+                    action
+                }
+            );
+
+
+            return {
+
+                success:false,
+
+                code:
+                    ERROR_CODES.INVALID_ACTION,
+
+                message:
+                    "Action inconnue.",
+
+                receivedAction:
+                    action || null,
+
+                receivedBody:
+                    rawBody || null
+
+            };
+
+    }
+
+}
+
+export default async function handler(
+    request,
+    response
+) {
+
+    try {
+
+
+        if (
+            request.method !== "POST"
+        ) {
+
+            return response
+                .status(405)
+                .json({
+
+                    success:false,
+
+                    message:
+                        "Méthode non autorisée."
+
+                });
+
+        }
+
+
+
+        const collections =
+            await getCollections();
+
+
+
+        const body =
+            request.body || {};
+
+
+
+        const action =
+            body.action;
+
+
+
+        const data =
+            body.data || {};
+
+
+
+        const result =
+            await executeAction(
+                action,
+                data,
+                collections,
+                body
+            );
+
+
+
+        return response
+            .status(200)
+            .json(
+                result
+            );
+
+
+
+    } catch(error) {
+
+
+        logError(
+            "API_FATAL_ERROR",
+            {
+                message:
+                    error.message,
+
+                stack:
+                    error.stack
+            }
+        );
+
+
+
+        if (
+            error instanceof APIError
+        ) {
+
+            return response
+                .status(
+                    error.status
+                )
+                .json({
+
+                    success:false,
+
+                    code:
+                        error.code,
+
+                    message:
+                        error.message,
+
+                    details:
+                        error.details
+
+                });
+
+        }
+
+
+
+        return response
+            .status(500)
+            .json({
+
+                success:false,
+
+                code:
+                    ERROR_CODES.UNKNOWN_ERROR,
+
+                message:
+                    "Erreur interne du serveur."
+
+            });
+
+
+    }
+
+}
