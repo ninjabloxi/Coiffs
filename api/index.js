@@ -525,10 +525,13 @@ async function executeAction(action, data, collections) {
         default:
             return {
                 success: false,
-                message: "Action inconnue."
+                message: "Action inconnue.",
+                receivedAction: action,
+                receivedBody: request.body
             };
     }
 }
+
 
 export default async function handler(request, response) {
     try {
