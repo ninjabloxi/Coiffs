@@ -3,22 +3,33 @@
 //------------------//
 
 
-async function apiRequest(endpoint, data = {}){
+async function apiRequest(endpoint,data = {}){
 
 
 const response = await fetch(
-"/api/" + endpoint,
+
+"/api/index",
+
 {
 
 method:"POST",
 
 headers:{
+
 "Content-Type":"application/json"
+
 },
 
-body:JSON.stringify(data)
+body:JSON.stringify({
+
+action:endpoint,
+
+data:data
+
+})
 
 }
+
 );
 
 
