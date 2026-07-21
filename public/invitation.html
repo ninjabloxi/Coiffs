@@ -7,17 +7,14 @@
 <meta charset="UTF-8">
 
 <meta name="viewport"
-content="width=device-width,initial-scale=1.0">
+content="width=device-width, initial-scale=1.0">
 
 <title>
 Invitation Coiffs
 </title>
 
-<meta name="theme-color"
-content="#09090B">
-
 <link rel="stylesheet"
-href="./style.css">
+href="style.css">
 
 <link rel="apple-touch-icon"
 href="logo.png">
@@ -38,132 +35,774 @@ href="logo.png">
 <link rel="manifest"
 href="manifest.json">
 
+<meta name="theme-color"
+content="#09090B">
+
+
+<style>
+
+*{
+
+box-sizing:border-box;
+margin:0;
+padding:0;
+
+}
+
+
+body{
+
+background:#09090B;
+color:white;
+font-family:sans-serif;
+min-height:100vh;
+
+display:flex;
+justify-content:center;
+align-items:center;
+
+padding:30px;
+
+}
+
+
+#invitation-page{
+
+width:100%;
+max-width:600px;
+
+}
+
+
+.invitation-card{
+
+background:#18181B;
+border-radius:30px;
+padding:35px;
+text-align:center;
+
+box-shadow:
+0px 0px 40px
+rgba(0,0,0,0.60);
+
+}
+
+
+.profile-picture{
+
+width:150px;
+height:150px;
+
+border-radius:50%;
+
+object-fit:cover;
+
+box-shadow:
+0px 0px 40px
+rgba(80,80,80,0.70);
+
+margin-bottom:25px;
+
+}
+
+
+#welcome-text{
+
+font-size:18px;
+opacity:0.8;
+
+margin-bottom:15px;
+
+}
+
+
+#family-name{
+
+font-size:35px;
+
+margin-bottom:25px;
+
+}
+
+
+#information{
+
+opacity:0.8;
+
+line-height:28px;
+
+margin-bottom:30px;
+
+}
+
+
+.primary-button{
+
+width:100%;
+
+padding:18px;
+
+border:none;
+border-radius:20px;
+
+background:#2563EB;
+color:white;
+
+font-size:18px;
+font-weight:bold;
+
+cursor:pointer;
+
+margin-bottom:15px;
+
+}
+
+
+.secondary-button{
+
+width:100%;
+
+padding:18px;
+
+border:none;
+border-radius:20px;
+
+background:#27272A;
+color:white;
+
+font-size:18px;
+font-weight:bold;
+
+cursor:pointer;
+
+margin-bottom:15px;
+
+}
+
+
+.primary-button:hover{
+
+opacity:0.9;
+
+}
+
+
+.secondary-button:hover{
+
+opacity:0.9;
+
+}
+
+
+#status{
+
+margin-top:25px;
+opacity:0.7;
+
+}
+
+
+#tutorial{
+
+display:none;
+
+margin-top:25px;
+
+background:#27272A;
+
+padding:20px;
+
+border-radius:20px;
+
+line-height:30px;
+
+text-align:left;
+
+}
+
+
+#loading{
+
+display:none;
+
+margin-top:20px;
+
+}
+
+
+.loader{
+
+width:45px;
+height:45px;
+
+border-radius:50%;
+
+border:
+
+5px solid #27272A;
+
+border-top:
+
+5px solid white;
+
+animation:
+
+loading 1s linear infinite;
+
+margin:auto;
+
+margin-bottom:15px;
+
+}
+
+
+@keyframes loading{
+
+0%{
+
+transform:
+rotate(0deg);
+
+}
+
+
+100%{
+
+transform:
+rotate(360deg);
+
+}
+
+
+}
+
+</style>
+
 </head>
 
 <body>
 
 
-
-<!-- BIENVENUE -->
-
-<div id="welcome-screen">
-
-<h1 id="welcome-title">
-
-Bienvenue sur Coiffs
-
-</h1>
-
-</div>
-
-
-
-<!-- INVITATION -->
-
 <div id="invitation-page">
 
+
 <div class="invitation-card">
+
 
 <img
 id="admin-photo"
 class="profile-picture"
-src="logo.png">
+src="logo.png"
+>
 
 
-<p id="invite-text">
+<p id="welcome-text">
 
-Chargement de l'invitation...
+Vous avez reçu
+une invitation.
 
 </p>
 
 
 <h1 id="family-name">
 
-Coiffs
+Chargement...
 
 </h1>
 
 
-<br>
+<p id="information">
+
+Cette invitation vous
+permet de rejoindre
+une famille Coiffs.
+
+<br><br>
+
+Pour continuer,
+ouvrez l'application
+Coiffs ou installez-la
+sur votre appareil.
+
+</p>
+
 
 
 <button
-id="join-button"
+id="open-button"
 class="primary-button">
 
 OUVRIR L'APPLICATION
 
 </button>
 
-</div>
+
+
+<button
+id="install-button"
+class="secondary-button">
+
+INSTALLER L'APPLICATION
+
+</button>
+
+
+
+<div id="tutorial">
+
+<h3>
+
+Tutoriel
+
+</h3>
+
+<br>
+
+<p>
+
+<b>Sur iPhone / iPad :</b>
+
+<br><br>
+
+1. Appuyez sur
+« Partager ».
+
+<br>
+
+2. Appuyez sur
+« Sur l'écran d'accueil ».
+
+<br>
+
+3. Appuyez sur
+« Ajouter ».
+
+<br><br>
+
+
+<b>Sur Android :</b>
+
+<br><br>
+
+1. Ouvrez le menu
+de votre navigateur.
+
+<br>
+
+2. Appuyez sur
+« Installer l'application »
+ou « Ajouter à l'écran
+d'accueil ».
+
+<br>
+
+3. Confirmez
+l'installation.
+
+</p>
 
 </div>
 
 
 
-<!-- POP-UP -->
+<div id="loading">
 
-<div id="popup-background">
-
-<div id="popup-container">
+<div class="loader">
 
 </div>
 
+<p>
+
+Chargement...
+
+</p>
+
 </div>
 
 
 
-<script src="./animations.js"></script>
-<script src="./mongodb.js"></script>
-<script src="./app.js"></script>
+<p id="status">
+
+Invitation Coiffs
+
+</p>
+
+
+</div>
+
+
+</div>
 
 
 
 <script>
 
+
 //------------------//
-// INVITATION
+// VARIABLES
 //------------------//
+
+
+const adminPhoto =
+
+document.getElementById(
+"admin-photo"
+);
+
+
+const familyName =
+
+document.getElementById(
+"family-name"
+);
+
+
+const openButton =
+
+document.getElementById(
+"open-button"
+);
+
+
+const installButton =
+
+document.getElementById(
+"install-button"
+);
+
+
+const tutorial =
+
+document.getElementById(
+"tutorial"
+);
+
+
+const loading =
+
+document.getElementById(
+"loading"
+);
+
+
+
+
+//------------------//
+// UTILITAIRES
+//------------------//
+
+
+function getInvitationID(){
+
+
+const url =
+
+new URL(
+
+window.location.href
+
+);
+
+
+return url
+.searchParams
+.get("id");
+
+
+}
+
+
+
+
+function saveInvitation(){
+
 
 const invitationID =
 
-new URLSearchParams(
-window.location.search
-).get("id");
+getInvitationID();
+
+
+
+if(
+
+!invitationID
+
+){
+
+return;
+
+}
+
+
+localStorage.setItem(
+
+"coiffs-invitation",
+
+JSON.stringify({
+
+
+invitationID
+
+
+})
+
+
+);
+
+
+}
+
+
+
+
+function isStandalone(){
+
+
+return (
+
+
+window.matchMedia(
+
+"(display-mode: standalone)"
+
+).matches
+
+
+||
+
+
+window.navigator.standalone === true
+
+
+);
+
+
+}
+
+
+
+
+function isApple(){
+
+
+return /iPhone|iPad|Mac/i
+.test(
+
+navigator.userAgent
+
+);
+
+
+}
+
+
+
+
+function isAndroid(){
+
+
+return /Android/i
+.test(
+
+navigator.userAgent
+
+);
+
+
+}
 
 
 
 
 //------------------//
-// DÉMARRAGE
+// INSTALLATION
 //------------------//
 
-window.onload = ()=>{
+
+function showTutorial(){
+
+
+if(
+
+tutorial.style.display ===
+
+"block"
+
+){
+
+tutorial.style.display =
+
+"none";
+
+
+return;
+
+
+}
+
+
+tutorial.style.display =
+
+"block";
+
+
+}
+
+
+
+
+//------------------//
+// OUVERTURE
+//------------------//
+
+
+function openApplication(){
+
+
+saveInvitation();
+
+
+loading.style.display =
+
+"block";
 
 
 setTimeout(()=>{
 
 
-const welcome =
+window.location.href =
 
-document.getElementById(
-"welcome-screen"
-);
+"./app.html";
 
 
-if(welcome){
+},800);
 
-welcome.style.display =
-"none";
 
 }
 
 
-},1500);
+
+
+//------------------//
+// INVITATION
+//------------------//
+
+
+async function loadInvitation(){
+
+
+saveInvitation();
+
+
+const invitationID =
+
+getInvitationID();
 
 
 
-loadInvitation();
+if(
+
+!invitationID
+
+){
+
+familyName.textContent =
+
+"Invitation invalide";
+
+
+return;
+
+
+}
+
+
+familyName.textContent =
+
+"Invitation Coiffs";
+
+
+}
+
+
+
+
+//------------------//
+// PHOTO
+//------------------//
+
+
+function setAdminPhoto(url){
+
+
+if(
+
+!url
+
+){
+
+return;
+
+}
+
+
+adminPhoto.src =
+
+url;
+
+
+}
+
+
+
+
+//------------------//
+// DÉTECTION
+//------------------//
+
+
+function checkApplication(){
+
+
+if(
+
+isStandalone()
+
+){
+
+openApplication();
+
+}
+
+
+}
+
+
+
+
+//------------------//
+// BOUTONS
+//------------------//
+
+
+openButton.onclick =
+
+()=>{
+
+
+openApplication();
+
+
+};
+
+
+
+installButton.onclick =
+
+()=>{
+
+
+showTutorial();
 
 
 };
@@ -172,208 +811,71 @@ loadInvitation();
 
 
 //------------------//
-// CHARGEMENT
+// DÉMARRAGE
 //------------------//
 
-async function loadInvitation(){
 
+window.onload =
 
-if(!invitationID){
+()=>{
 
 
-document.getElementById(
-"invite-text"
-).textContent =
+loadInvitation();
 
-"Cette invitation est invalide.";
 
+checkApplication();
 
-return;
 
-
-}
-
-
-try{
-
-
-const result =
-
-await callAPI(
-
-"get-invitation",
-
-{
-
-invitationID
-
-}
-
-);
-
-
-
-if(!result.success){
-
-
-document.getElementById(
-"invite-text"
-).textContent =
-
-"Cette invitation n'existe plus.";
-
-
-return;
-
-
-}
-
-
-
-if(result.invitation){
-
-
-document.getElementById(
-"family-name"
-).textContent =
-
-result.invitation.familyName ||
-"Famille";
-
-
-}
-
-
-if(result.admin){
-
-
-document.getElementById(
-"invite-text"
-).textContent =
-
-result.admin.firstname +
-" vous invite à rejoindre :";
-
-
-
-if(result.admin.photo){
-
-
-document.getElementById(
-"admin-photo"
-).src =
-
-result.admin.photo;
-
-
-}
-
-
-}
-
-
-
-}
-
-
-catch(error){
-
-
-console.error(error);
-
-
-document.getElementById(
-"invite-text"
-).textContent =
-
-"Impossible de charger l'invitation.";
-
-
-}
-
-
-}
+};
 
 
 
 
 //------------------//
-// OUVRIR
+// FUTUR
 //------------------//
 
-function openApplication(){
+/*
 
+Cette page pourra
+par la suite :
 
-if(!invitationID){
-return;
-}
+- Afficher le prénom
+de l'administrateur.
 
+- Afficher sa photo
+de profil.
 
+- Afficher le nom
+réel de la famille.
 
-// sauvegarde locale
-localStorage.setItem(
+- Vérifier si
+l'invitation existe.
 
-"coiffs-pending-invitation",
+- Vérifier si elle
+a expiré.
 
-invitationID
+- Vérifier le nombre
+d'utilisations restantes.
 
-);
+- Rediriger
+automatiquement
+vers l'application
+web installée.
 
+- Afficher les erreurs
+du serveur.
 
+- Permettre de se
+connecter directement
+avant de rejoindre
+la famille.
 
-// déjà dans l'app web
-if(
-
-window.matchMedia(
-
-"(display-mode: standalone)"
-
-).matches ||
-
-window.navigator.standalone === true
-
-){
-
-
-window.location.href =
-
-"./app.html?invitation=" +
-
-invitationID;
-
-
-return;
-
-
-}
-
-
-
-// navigateur classique
-window.location.href =
-
-"./web.html?invitation=" +
-
-invitationID;
-
-
-}
-
-
-
-
-//------------------//
-// BOUTON
-//------------------//
-
-document.getElementById(
-"join-button"
-).onclick =
-
-openApplication;
+*/
 
 
 </script>
+
 
 </body>
 
