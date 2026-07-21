@@ -361,40 +361,60 @@ user
 async function loginUser(data){
 
 
-    const user =
+if(
 
-    await users.findOne({
+!data.id ||
 
-        id:
-        data.id,
+!data.password
 
-        password:
-        data.password
+){
 
-    });
+return{
 
+success:false,
 
-    if(!user){
+message:
+"Informations invalides."
 
-        return {
+};
 
-            success:false,
-
-            message:
-            "Compte introuvable."
-
-        };
-
-    }
+}
 
 
-    return {
+const user =
 
-        success:true,
+await users.findOne({
 
-        user
+id:
+String(data.id),
 
-    };
+password:
+String(data.password)
+
+});
+
+
+if(!user){
+
+return{
+
+success:false,
+
+message:
+"Compte introuvable."
+
+};
+
+}
+
+
+return{
+
+success:true,
+
+user
+
+};
 
 
 }
@@ -405,34 +425,49 @@ async function loginUser(data){
 async function getUser(data){
 
 
-    const user =
+if(
 
-    await users.findOne({
+!data.id
 
-        id:
-        data.id
+){
 
-    });
+return{
 
+success:false
 
-    if(!user){
+};
 
-        return {
-
-            success:false
-
-        };
-
-    }
+}
 
 
-    return {
+const user =
 
-        success:true,
+await users.findOne({
 
-        user
+id:
+String(data.id)
 
-    };
+});
+
+
+if(!user){
+
+return{
+
+success:false
+
+};
+
+}
+
+
+return{
+
+success:true,
+
+user
+
+};
 
 
 }
