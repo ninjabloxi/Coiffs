@@ -500,7 +500,7 @@ async function joinInvitation(data, { users, families, invitations }) {
 // ROUTEUR FINAL
 //------------------//
 
-async function executeAction(action, data, collections) {
+async function executeAction(action, data, collections, requestBody) {
     switch (action) {
         case "create-user":
             return await createUser(data, collections);
@@ -527,24 +527,23 @@ async function executeAction(action, data, collections) {
                 success: false,
                 message: "Action inconnue.",
                 receivedAction: action,
-                receivedBody: request.body
+                receivedBody: requestBody
             };
     }
 }
-
 
 export default async function handler(request, response) {
     try {
         if (request.method !== "POST") {
             const collections = await getCollections();
             const { action, data } = request.body || {};
-            const result = await executeAction(action, data, collections);
+            const result = await executeAction(action, data, collections, request.body);
             return response.status(200).json(result);
         }
 
         const collections = await getCollections();
-        const { action, data } = request.body;
-        const result = await executeAction(action, data, collections);
+        const { action, data } = request.body || {};
+        const result = await executeAction(action, data, collections, request.body);
 
         return response.status(200).json(result);
     } catch (error) {
