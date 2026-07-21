@@ -1,29 +1,29 @@
 //------------------//
-// IMPORTS
+// MONGODB
 //------------------//
 
 
 import { MongoClient } from "mongodb";
 
+let client = null;
 
+async function connectMongo(){
 
+    if(client){
 
-//------------------//
-// MONGODB
-//------------------//
+        return client;
 
+    }
 
-const client =
+    client = new MongoClient(
+        process.env.MONGODB_URI
+    );
 
-new MongoClient(
+    await client.connect();
 
-process.env.MONGODB_URI
+    return client;
 
-);
-
-
-await client.connect();
-
+}
 
 const database =
 
