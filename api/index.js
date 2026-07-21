@@ -544,34 +544,34 @@ async function createFamily(data){
 async function getFamily(data){
 
 
-    const family =
+const family =
 
-    await families.findOne({
+await families.findOne({
 
-        id:
-        data.familyID
+id:
+data.id
 
-    });
-
-
-    if(!family){
-
-        return {
-
-            success:false
-
-        };
-
-    }
+});
 
 
-    return {
+if(!family){
 
-        success:true,
+return{
 
-        family
+success:false
 
-    };
+};
+
+}
+
+
+return{
+
+success:true,
+
+family
+
+};
 
 
 }
