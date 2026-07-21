@@ -612,6 +612,84 @@ return COIFFS_NAME;
 }
 
 //------------------//
+// SAUVEGARDE
+//------------------//
+
+const AUTO_LOGIN_STORAGE =
+
+"coiffs-auto-login";
+
+
+function saveUserData(){
+
+if(!currentUser){
+
+return;
+
+}
+
+localStorage.setItem(
+
+AUTO_LOGIN_STORAGE,
+
+JSON.stringify(currentUser)
+
+);
+
+}
+
+
+function loadUserData(){
+
+try{
+
+const data =
+
+localStorage.getItem(
+AUTO_LOGIN_STORAGE
+);
+
+
+if(!data){
+
+return false;
+
+}
+
+
+currentUser =
+
+JSON.parse(data);
+
+
+isConnected = true;
+
+updateHeader();
+
+showHome();
+
+return true;
+
+}
+
+catch(error){
+
+return false;
+
+}
+
+}
+
+
+function deleteUserData(){
+
+localStorage.removeItem(
+AUTO_LOGIN_STORAGE
+);
+
+}
+
+//------------------//
 // CONNEXION API
 //------------------//
 
