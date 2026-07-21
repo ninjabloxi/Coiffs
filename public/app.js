@@ -171,6 +171,13 @@ const ACCOUNT_STORAGE =
 "coiffs-account";
 
 
+const TOKEN_STORAGE =
+"coiffs-invitation-token";
+
+const TOKEN_URL =
+"coiffs:open-invite-token-paste";
+
+
 
 
 //------------------//
@@ -241,6 +248,9 @@ await checkConnection();
 
 
 await checkInvitation();
+
+
+await checkInvitationToken();
 
 
 await loadSettings();
@@ -612,6 +622,37 @@ return COIFFS_NAME;
 }
 
 //------------------//
+// TOKENS INVITATION
+//------------------//
+
+function saveInvitationToken(token){
+
+localStorage.setItem(
+TOKEN_STORAGE,
+token
+);
+
+}
+
+
+function getInvitationToken(){
+
+return localStorage.getItem(
+TOKEN_STORAGE
+);
+
+}
+
+
+function deleteInvitationToken(){
+
+localStorage.removeItem(
+TOKEN_STORAGE
+);
+
+}
+
+//------------------//
 // SAUVEGARDE
 //------------------//
 
@@ -883,6 +924,52 @@ showConnection();
 }
 
 
+//------------------//
+// INVITATION TOKEN
+//------------------//
+
+async function checkInvitationToken(){
+
+const token = getInvitationToken();
+
+if(!token){
+
+return;
+
+}
+
+showLoading();
+
+const result = await callAPI(
+
+"get-token-family",
+
+{
+
+token
+
+}
+
+);
+
+hideLoading();
+
+if(!result.success){
+
+deleteInvitationToken();
+
+return;
+
+}
+
+showJoinTokenPopup(
+
+result.family,
+token
+
+);
+
+}
 
 
 //------------------//
@@ -1916,6 +2003,68 @@ RETOUR
 }
 
 
+//------------------//
+// INVITATION TOKEN
+//------------------//
+
+function showJoinTokenPopup(
+family,
+token
+){
+
+openPopup();
+
+popupContainer.innerHTML =
+
+`
+
+<div class="profile-card">
+
+<img
+class="profile-picture"
+src="${family.adminPhoto}">
+
+<br>
+
+<h2>
+
+${family.name}
+
+</h2>
+
+<p>
+
+Voulez-vous rejoindre
+cette famille ?
+
+</p>
+
+<br>
+
+<button
+class="primary-button"
+onclick="joinFamilyWithToken('${token}')">
+
+REJOINDRE
+
+</button>
+
+<br>
+<br>
+
+<button
+class="secondary-button"
+onclick="closePopup()">
+
+ANNULER
+
+</button>
+
+</div>
+
+`;
+
+}
 
 
 //------------------//
@@ -2513,7 +2662,68 @@ ANNULER
 
 }
 
+//------------------//
+// TOKEN INVITATION
+//------------------//
 
+async function joinFamilyWithToken(
+token
+){
+
+showLoading();
+
+const result = await callAPI(
+
+"join-family-token",
+
+{
+
+token,
+
+userID:
+currentUser.id
+
+}
+
+);
+
+hideLoading();
+
+if(!result.success){
+
+showError(
+result.message
+);
+
+return;
+
+}
+
+deleteInvitationToken();
+
+currentUser.familyID =
+result.family.id;
+
+currentUser.familyName =
+result.family.name;
+
+currentUser.role =
+"member";
+
+currentFamily =
+result.family;
+
+closePopup();
+
+showSuccess(
+
+"Vous avez rejoint votre famille."
+
+);
+
+showHome();
+
+}
 
 //------------------//
 // CRÉER
