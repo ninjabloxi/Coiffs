@@ -2,7 +2,7 @@
   "name": "Coiffs",
   "short_name": "Coiffs",
   "description": "Coiffs - Gestion de familles",
-  "start_url": "/",
+  "start_url": "/app.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#ffffff",
