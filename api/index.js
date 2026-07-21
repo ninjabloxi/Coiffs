@@ -1301,7 +1301,7 @@ return await createUser(data);
 
 
 
-case "login-user":
+case "login":
 
 return await loginUser(data);
 
