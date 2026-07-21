@@ -1282,77 +1282,104 @@ async function joinInvitation(data){
 
 export async function executeAction(
 
-
 action,
 data
 
-
 ){
-
 
 
 switch(action){
 
 
+case "ping":
+
+return {
+
+success:true
+
+};
+
+
+case "server-version":
+
+return {
+
+success:true,
+
+version:
+"1.0.0"
+
+};
+
 
 case "create-user":
 
-return await createUser(data);
-
+return await createUser(
+data
+);
 
 
 case "login":
 
-return await loginUser(data);
-
+return await loginUser(
+data
+);
 
 
 case "get-user":
 
-return await getUser(data);
-
+return await getUser(
+data
+);
 
 
 case "create-family":
 
-return await createFamily(data);
-
+return await createFamily(
+data
+);
 
 
 case "get-family":
 
-return await getFamily(data);
-
+return await getFamily(
+data
+);
 
 
 case "join-family":
 
-return await joinFamily(data);
-
+return await joinFamily(
+data
+);
 
 
 case "leave-family":
 
-return await leaveFamily(data);
-
+return await leaveFamily(
+data
+);
 
 
 case "create-invitation":
 
-return await createInvitation(data);
-
+return await createInvitation(
+data
+);
 
 
 case "get-invitation":
 
-return await getInvitation(data);
-
+return await getInvitation(
+data
+);
 
 
 case "join-invitation":
 
-return await joinInvitation(data);
-
+return await joinInvitation(
+data
+);
 
 
 default:
@@ -1360,20 +1387,15 @@ default:
 
 return {
 
-
 success:false,
-
 
 message:
 "Action inconnue."
 
-
 };
 
 
-
 }
-
 
 
 }
