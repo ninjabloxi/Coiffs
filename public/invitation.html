@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="fr">
-
 <head>
 
 <meta charset="UTF-8">
@@ -12,584 +11,129 @@ content="width=device-width,initial-scale=1.0">
 Invitation Coiffs
 </title>
 
-<meta name="theme-color"
-content="#09090B">
+<style>
 
-<link rel="stylesheet"
-href="./style.css">
+body{
 
-<link rel="apple-touch-icon"
-href="logo.png">
+margin:0;
+padding:40px;
 
-<link rel="icon"
-type="image/png"
-href="logo.png">
+font-family:sans-serif;
 
-<meta name="apple-mobile-web-app-title"
-content="Coiffs">
+background:#F5F5F5;
 
-<meta name="apple-mobile-web-app-capable"
-content="yes">
+display:flex;
 
-<meta name="apple-mobile-web-app-status-bar-style"
-content="black-translucent">
+justify-content:center;
 
-<link rel="manifest"
-href="manifest.json">
+align-items:center;
+
+min-height:100vh;
+
+}
+
+.card{
+
+background:white;
+
+padding:40px;
+
+border-radius:20px;
+
+max-width:500px;
+
+width:100%;
+
+text-align:center;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,.1);
+
+}
+
+.token{
+
+margin-top:20px;
+
+padding:20px;
+
+font-size:28px;
+
+font-weight:bold;
+
+border-radius:12px;
+
+background:#EFEFEF;
+
+word-break:break-all;
+
+}
+
+</style>
 
 </head>
 
 <body>
 
+<div class="card">
 
-
-<div id="invitation-page">
-
-
-<div class="invitation-card">
-
-
-<img
-id="admin-photo"
-src="logo.png"
-class="profile-picture">
-
-
-
-<h1
-id="family-name">
-
-Chargement...
-
+<h1>
+Invitation Coiffs
 </h1>
 
+<p>
 
-
-<p
-id="invite-text">
-
-Vous avez été invité à rejoindre une famille Coiffs.
+Ouvrez l'application
+<b>Coiffs</b>
 
 </p>
 
+<p>
 
-
-<div id="token-container">
-
-
-<p class="small-title">
-
-TOKEN D'INVITATION
+Puis allez dans
 
 </p>
 
+<p>
 
-<div id="token-box">
+<b>
+Rejoindre une famille
+</b>
+
+</p>
+
+<p>
+
+et saisissez le token :
+
+</p>
+
+<div
+id="token"
+class="token">
 
 Chargement...
 
 </div>
 
-
 </div>
-
-
-
-<p
-id="instruction-text">
-
-Appuyez sur le bouton ci-dessous pour copier votre token et ouvrir Coiffs.
-
-</p>
-
-
-
-<button
-id="open-button"
-class="primary-button">
-
-COPIER ET OUVRIR COIFFS
-
-</button>
-
-
-
-<p
-id="device-text">
-
-Détection de votre appareil...
-
-</p>
-
-
-</div>
-
-
-</div>
-
-
-
 
 <script>
 
-
-
-//------------------//
-// VARIABLES
-//------------------//
-
-
-let invitationToken = "";
-
-let familyName = "";
-
-let adminPhoto = "";
-
-
-
-
-//------------------//
-// APPAREIL
-//------------------//
-
-
-function isAndroid(){
-
-return /Android/i
-.test(
-
-navigator.userAgent
-
-);
-
-}
-
-
-function isApple(){
-
-return /iPhone|iPad|iPod|Mac/i
-.test(
-
-navigator.userAgent
-
-);
-
-}
-
-
-
-
-//------------------//
-// URL
-//------------------//
-
-
-function getInvitationID(){
-
 const params =
-
 new URLSearchParams(
-
 window.location.search
-
 );
 
-
-return params.get("id");
-
-}
-
-
-
-
-//------------------//
-// CHARGEMENT
-//------------------//
-
-
-window.onload = ()=>{
-
-loadInvitation();
-
-};
-
-
-
-
-//------------------//
-// INVITATION
-//------------------//
-
-
-async function loadInvitation(){
-
-
-try{
-
-
-const invitationID =
-
-getInvitationID();
-
-
-
-if(!invitationID){
-
-showError(
-"Invitation invalide."
-);
-
-return;
-
-}
-
-
-
-const response =
-
-await fetch(
-
-"/api/index",
-
-{
-
-method:"POST",
-
-headers:{
-
-"Content-Type":
-"application/json"
-
-},
-
-body:
-
-JSON.stringify({
-
-action:
-"get-invitation",
-
-data:{
-
-id:
-invitationID
-
-}
-
-})
-
-}
-
-
-);
-
-
-
-const result =
-
-await response.json();
-
-
-
-if(
-
-!result.success
-
-){
-
-showError(
-
-result.message
-
-);
-
-return;
-
-}
-
-
-
-familyName =
-
-result.family.name;
-
-
-
-adminPhoto =
-
-result.family.adminPhoto;
-
-
-
-invitationToken =
-
-result.token;
-
-
-
-updatePage();
-
-
-}
-
-catch(error){
-
-console.error(error);
-
-showError(
-"Impossible de charger l'invitation."
-);
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// PAGE
-//------------------//
-
-
-function updatePage(){
-
+const token =
+params.get("id");
 
 document.getElementById(
-"family-name"
+"token"
 ).textContent =
-
-familyName;
-
-
-
-document.getElementById(
-"token-box"
-).textContent =
-
-invitationToken;
-
-
-
-if(adminPhoto){
-
-document.getElementById(
-"admin-photo"
-).src =
-
-adminPhoto;
-
-}
-
-
-
-if(isAndroid()){
-
-
-document.getElementById(
-"device-text"
-).textContent =
-
-"Android détecté. Coiffs s'ouvrira automatiquement après la copie du token.";
-
-
-}
-
-
-else if(isApple()){
-
-
-document.getElementById(
-"device-text"
-).textContent =
-
-"Apple détecté. Ouvrez ensuite l'application Coiffs et rejoignez une famille avec votre token.";
-
-
-}
-
-
-else{
-
-
-document.getElementById(
-"device-text"
-).textContent =
-
-"Appareil non détecté.";
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// ERREUR
-//------------------//
-
-
-function showError(message){
-
-
-document.getElementById(
-"family-name"
-).textContent =
-
-"Erreur";
-
-
-document.getElementById(
-"invite-text"
-).textContent =
-
-message;
-
-
-document.getElementById(
-"open-button"
-).style.display =
-
-"none";
-
-
-}
-
-
-
-
-//------------------//
-// COPIER
-//------------------//
-
-
-async function copyToken(){
-
-
-try{
-
-
-await navigator.clipboard.writeText(
-
-invitationToken
-
-);
-
-
-return true;
-
-
-}
-
-catch(error){
-
-
-return false;
-
-
-}
-
-
-}
-
-
-
-
-//------------------//
-// OUVRIR COIFFS
-//------------------//
-
-
-async function openCoiffs(){
-
-
-const copied =
-
-await copyToken();
-
-
-
-if(!copied){
-
-alert(
-
-"Impossible de copier le token."
-
-);
-
-return;
-
-}
-
-
-
-if(isAndroid()){
-
-
-window.location.href =
-
-`https://coiffs.vercel.app/?token=${invitationToken}`;
-
-
-return;
-
-
-}
-
-
-
-if(isApple()){
-
-
-alert(
-
-"Votre token a été copié.\n\nOuvrez maintenant Coiffs puis allez dans 'Rejoindre une famille' et collez votre token."
-
-);
-
-
-window.location.href =
-
-"https://coiffs.vercel.app";
-
-
-return;
-
-
-}
-
-
-
-window.location.href =
-
-"https://coiffs.vercel.app";
-
-
-}
-
-
-
-
-//------------------//
-// BOUTON
-//------------------//
-
-
-document.getElementById(
-"open-button"
-).onclick = ()=>{
-
-openCoiffs();
-
-};
-
+token || "Token introuvable";
 
 </script>
-
-
 
 </body>
 </html>
