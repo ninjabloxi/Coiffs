@@ -2341,6 +2341,13 @@ async function executeAction(
                 data,
                 collections
             );
+            
+        case "join-token":
+
+            return await joinInvitation(
+                 data,
+                 collections
+            );
 
 
         case "health-check":
