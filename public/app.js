@@ -826,7 +826,9 @@ async function checkConnection(){
 
 if(loadUserData()){
 
-return;
+    await checkPendingInvitation();
+
+    return;
 
 }
 
@@ -5314,30 +5316,6 @@ checkInvitation();
 
 
 
-
-//------------------//
-// DÉMARRAGE
-//------------------//
-
-
-window.addEventListener(
-
-"load",
-
-async()=>{
-
-
-await checkInvitation();
-
-
-await checkPendingInvitation();
-
-
-}
-
-
-);
-
 //------------------//
 // ADMINISTRATION
 //------------------//
@@ -7316,54 +7294,6 @@ error
 }
 
 );
-
-
-
-
-//------------------//
-// DÉMARRAGE
-//------------------//
-
-
-window.addEventListener(
-
-"load",
-
-async()=>{
-
-
-try{
-
-
-await initialization();
-
-
-await checkPendingInvitation();
-
-
-updateHeader();
-
-
-}
-
-
-catch(error){
-
-
-console.error(
-
-error
-
-);
-
-
-}
-
-
-}
-
-);
-
 
 
 
