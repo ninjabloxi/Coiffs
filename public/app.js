@@ -4508,8 +4508,7 @@ return;
 
 
 const link =
-
-`${window.location.origin}/invitation.html?id=${result.id}`;
+`${window.location.origin}/invitation.html?token=${result.token}`;
 
 
 
