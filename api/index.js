@@ -2345,9 +2345,12 @@ async function executeAction(
         case "join-token":
 
             return await joinInvitation(
-                 data,
-                 collections
-            );
+            {
+                 invitationID: data.token,
+                 userID: data.userID
+            },
+            collections
+        );
 
 
         case "health-check":
