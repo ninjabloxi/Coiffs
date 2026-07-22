@@ -2204,6 +2204,54 @@ async function joinInvitation(data, collections) {
 
 }
 
+//------------------//
+// TOKENS
+//------------------//
+
+
+async function getTokenFamily(
+token
+){
+
+return{
+
+success:true,
+
+family:{
+
+id:"",
+name:""
+
+}
+
+};
+
+}
+
+
+
+async function joinFamilyToken(
+
+token,
+userID
+
+){
+
+return{
+
+success:true,
+
+family:{
+
+id:"",
+name:""
+
+}
+
+};
+
+}
+
 async function executeAction(
     action,
     data,
@@ -2305,6 +2353,23 @@ async function executeAction(
                     )
 
             };
+            
+            
+        case "get-token-family":
+
+            return await getTokenFamily(
+                 data.token
+            );
+
+
+        case "join-family-token":
+
+            return await joinFamilyToken(
+
+                 data.token,
+                 data.userID
+
+            );
 
 
         default:
