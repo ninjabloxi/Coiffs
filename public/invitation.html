@@ -1,72 +1,83 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
 
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 
-<meta name="viewport"
-content="width=device-width,initial-scale=1.0">
-
-<title>
-Invitation Coiffs
-</title>
+<title>Invitation Coiffs</title>
 
 <style>
 
-body{
-
+*{
 margin:0;
-padding:40px;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
 
-font-family:sans-serif;
-
-background:#F5F5F5;
-
+body{
+background:#f5f5f5;
 display:flex;
-
 justify-content:center;
-
 align-items:center;
-
 min-height:100vh;
-
+padding:20px;
 }
 
 .card{
-
 background:white;
-
-padding:40px;
-
-border-radius:20px;
-
-max-width:500px;
-
 width:100%;
-
+max-width:500px;
+padding:40px;
+border-radius:30px;
 text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
 
-box-shadow:
-0 10px 30px rgba(0,0,0,.1);
+.logo{
+width:120px;
+height:120px;
+border-radius:50%;
+background:#eeeeee;
+display:flex;
+justify-content:center;
+align-items:center;
+margin:auto;
+font-size:70px;
+font-weight:bold;
+margin-bottom:25px;
+}
 
+h1{
+font-size:42px;
+margin-bottom:10px;
+}
+
+.token-title{
+font-size:14px;
+font-weight:bold;
+letter-spacing:1px;
+color:#777;
+margin-top:25px;
+margin-bottom:15px;
 }
 
 .token{
-
-margin-top:20px;
-
-padding:20px;
-
-font-size:28px;
-
+background:#f0f0f0;
+padding:18px;
+border-radius:14px;
+font-size:24px;
 font-weight:bold;
-
-border-radius:12px;
-
-background:#EFEFEF;
-
 word-break:break-all;
+}
 
+.description{
+margin-top:25px;
+font-size:18px;
+line-height:1.5;
+color:#666;
 }
 
 </style>
@@ -77,42 +88,37 @@ word-break:break-all;
 
 <div class="card">
 
+<div class="logo">
+C
+</div>
+
 <h1>
-Invitation Coiffs
+Invitation
 </h1>
 
-<p>
-
-Ouvrez l'application
-<b>Coiffs</b>
-
-</p>
-
-<p>
-
-Puis allez dans
-
-</p>
-
-<p>
-
-<b>
-Rejoindre une famille
-</b>
-
-</p>
-
-<p>
-
-et saisissez le token :
-
-</p>
+<div class="token-title">
+TOKEN D'INVITATION
+</div>
 
 <div
 id="token"
 class="token">
-
 Chargement...
+</div>
+
+<div class="description">
+
+Ouvrez l'application Coiffs.
+
+<br><br>
+
+Allez dans :
+
+<b>Rejoindre une famille</b>
+
+<br><br>
+
+Puis saisissez ce token.
 
 </div>
 
@@ -131,9 +137,10 @@ params.get("id");
 document.getElementById(
 "token"
 ).textContent =
-token || "Token introuvable";
+token || "TOKEN INTROUVABLE";
 
 </script>
 
 </body>
+
 </html>
