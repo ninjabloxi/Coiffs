@@ -1962,9 +1962,11 @@ async function createInvitation(data, collections) {
                 ),
 
             expiration:
-                String(
-                    data.expiration
-                ),
+                data.expiration ||
+                new Date(
+                    Date.now() +
+                    (30 * 24 * 60 * 60 * 1000)
+                ).toISOString(),
 
             limit:
                 Number(
